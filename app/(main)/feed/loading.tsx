@@ -1,24 +1,8 @@
-import { layout, skeleton, following as followingStyles } from '@/lib/styles'
+import { layout, skeleton } from '@/lib/styles'
 
 export default function FeedLoading(): JSX.Element {
   return (
-    <>
-      <div className={`${layout.fullBleed} -mt-6 mb-6`}>
-        <section className={followingStyles.bar} aria-hidden>
-          <div className={followingStyles.inner}>
-            <div className={`h-3 ${skeleton.bar} w-20`} />
-            <div className="flex gap-4 overflow-hidden">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className={`${skeleton.wrapper} flex flex-col items-center gap-2 w-[5.5rem] shrink-0`}>
-                  <div className={skeleton.avatarLg} />
-                  <div className={`h-2 ${skeleton.barLight} w-full`} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
-      <div className={layout.stack}>
+    <div className={layout.stack}>
         {[1, 2, 3].map((i) => (
           <div key={i} className={`${skeleton.card} ${skeleton.wrapper}`}>
             <div className="flex gap-3 mb-4">
@@ -34,7 +18,6 @@ export default function FeedLoading(): JSX.Element {
             </div>
           </div>
         ))}
-      </div>
-    </>
+    </div>
   )
 }

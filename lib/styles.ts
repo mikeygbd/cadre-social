@@ -167,7 +167,6 @@ export const following = {
   bar: 'w-full bg-surface/60 backdrop-blur-sm',
   inner: 'flex flex-col gap-3 px-6 sm:px-8 py-4',
   title: 'text-xs font-semibold uppercase tracking-wider text-muted-foreground',
-  empty: 'text-sm text-muted-foreground',
   list: 'flex items-start gap-4 overflow-x-auto pb-1',
   listItem: 'shrink-0',
   item: 'flex flex-col items-center gap-2 w-[5.5rem] group',

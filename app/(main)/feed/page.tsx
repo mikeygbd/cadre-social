@@ -121,9 +121,11 @@ export default async function FeedPage(): Promise<JSX.Element> {
 
   return (
     <>
-      <div className={`${layout.fullBleed} -mt-6 mb-6`}>
-        <FollowingBar profiles={followingProfiles} />
-      </div>
+      {followingProfiles.length > 0 && (
+        <div className={`${layout.fullBleed} -mt-6 mb-6`}>
+          <FollowingBar profiles={followingProfiles} />
+        </div>
+      )}
       <FeedPosts
         initialPosts={typedPosts}
         profiles={allProfiles}
