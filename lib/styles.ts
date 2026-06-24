@@ -165,6 +165,9 @@ export const like = {
 export const profile = {
   header: 'flex items-start justify-between',
   headerInner: 'flex items-center gap-4',
+  editBtn:
+    'inline-flex items-center justify-center p-2 border border-border rounded-xl text-muted hover:border-accent/50 hover:text-accent transition-colors shrink-0',
+  editIcon: 'h-4 w-4',
   stats: 'flex gap-4 mt-2',
   avatarPicker: 'flex items-center gap-4 mt-1.5',
   avatarPickerActions: 'flex flex-col items-start gap-2',
