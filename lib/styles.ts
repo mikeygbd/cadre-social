@@ -110,10 +110,11 @@ export const avatar = {
 
 export const post = {
   header: 'flex items-center gap-3 mb-3',
-  mediaHero: 'relative w-full aspect-[4/5] max-h-[28rem] overflow-hidden',
+  mediaHero: 'relative w-full aspect-[4/5] max-h-[28rem] overflow-hidden bg-surface-elevated',
   mediaImage: 'absolute inset-0 w-full h-full object-cover',
-  mediaOverlay: 'absolute inset-0 bg-black/35 pointer-events-none',
-  mediaHeader: 'absolute inset-x-0 top-0 z-10 flex items-center gap-3 p-4',
+  mediaHeader: 'absolute inset-x-0 top-0 z-10 p-4 pointer-events-none',
+  mediaHeaderPill:
+    'inline-flex items-center gap-3 rounded-full bg-black/50 backdrop-blur-md pl-1 pr-4 py-1 pointer-events-auto',
   mediaAuthor: 'block font-semibold text-white truncate hover:text-white/90 transition-colors',
   mediaTime: 'text-xs text-white/80',
   mediaBody: 'px-4 pt-2.5 pb-3',
@@ -141,7 +142,6 @@ export const post = {
   commentBody: 'text-muted-foreground',
   imageWrap: '-mx-5 overflow-hidden border-y border-border-subtle bg-surface-elevated',
   image: 'w-full aspect-[4/3] object-cover block',
-  imagePending: 'opacity-90',
   imageRemove:
     'absolute top-3 right-3 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-black/50 border border-white/20 text-white hover:bg-black/70 transition-colors backdrop-blur-sm disabled:opacity-50',
   imagePickerRow: 'mb-3',
