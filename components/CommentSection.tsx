@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Avatar from '@/components/Avatar'
 import type { CommentWithProfile } from '@/lib/types'
-import { avatar, button, form, post } from '@/lib/styles'
+import { button, form, post } from '@/lib/styles'
 
 type Props = {
   postId: string
@@ -51,19 +52,14 @@ export default function CommentSection({ postId, initialComments }: Props): JSX.
     <div className={post.comments}>
       {initialComments.length > 0 && (
         <ul className={post.commentList}>
-          {initialComments.map((comment) => {
-            const initial = (comment.display_name ?? 'U').charAt(0).toUpperCase()
-            return (
+          {initialComments.map((comment) => (
               <li key={comment.id} className={post.commentItem}>
-                {comment.avatar_url ? (
-                  <img
-                    src={comment.avatar_url}
-                    alt={comment.display_name ?? 'User'}
-                    className={`${avatar.sm} mt-0.5`}
-                  />
-                ) : (
-                  <div className={`${avatar.initialsSm} mt-0.5`}>{initial}</div>
-                )}
+                <Avatar
+                  src={comment.avatar_url}
+                  name={comment.display_name}
+                  size="sm"
+                  className="mt-0.5"
+                />
                 <p className={post.commentText}>
                   <span className={post.commentAuthor}>
                     {comment.display_name ?? 'Anonymous'}
@@ -71,8 +67,7 @@ export default function CommentSection({ postId, initialComments }: Props): JSX.
                   {comment.content}
                 </p>
               </li>
-            )
-          })}
+            ))}
         </ul>
       )}
 

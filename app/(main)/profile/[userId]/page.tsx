@@ -1,11 +1,11 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import Avatar from '@/components/Avatar'
 import type { Profile, Post } from '@/lib/types'
 import FollowButton from '@/components/FollowButton'
 import PostImage from '@/components/posts/PostImage'
 import {
-  avatar,
   button,
   card,
   empty,
@@ -69,22 +69,17 @@ export default async function ProfilePage({
     isFollowing = !!followRow
   }
 
-  const initials = (profileRecord.display_name ?? 'U').charAt(0).toUpperCase()
-
   return (
     <div>
       <div className={`${card.paddedLg} mb-6`}>
         <div className={profile.header}>
           <div className={profile.headerInner}>
-            {profileRecord.avatar_url ? (
-              <img
-                src={profileRecord.avatar_url}
-                alt={profileRecord.display_name ?? 'User'}
-                className={avatar.lg}
-              />
-            ) : (
-              <div className={avatar.initialsLg}>{initials}</div>
-            )}
+            <Avatar
+              src={profileRecord.avatar_url}
+              name={profileRecord.display_name}
+              size="lg"
+              priority
+            />
             <div>
               <h1 className={typography.h2}>
                 {profileRecord.display_name ?? 'Anonymous'}

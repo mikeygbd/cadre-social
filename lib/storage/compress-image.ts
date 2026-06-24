@@ -1,10 +1,17 @@
 import {
   ACCEPTED_IMAGE_TYPES,
+  AVATAR_MAX_DIMENSION,
+  AVATAR_TARGET_OUTPUT_BYTES,
   MAX_IMAGE_DIMENSION,
   MAX_INPUT_BYTES,
   TARGET_OUTPUT_BYTES,
   type AcceptedImageType,
 } from '@/lib/storage/constants'
+
+export type CompressOptions = {
+  maxDimension?: number
+  targetOutputBytes?: number
+}
 
 export type CompressedImage = {
   blob: Blob
@@ -76,9 +83,12 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality: number):
 async function compressWithCanvas(
   img: HTMLImageElement,
   outputType: 'image/jpeg' | 'image/webp' | 'image/png',
-  extension: string
+  extension: string,
+  options: CompressOptions
 ): Promise<CompressedImage> {
-  const scaled = scaleDimensions(img.naturalWidth, img.naturalHeight, MAX_IMAGE_DIMENSION)
+  const maxDimension = options.maxDimension ?? MAX_IMAGE_DIMENSION
+  const targetOutputBytes = options.targetOutputBytes ?? TARGET_OUTPUT_BYTES
+  const scaled = scaleDimensions(img.naturalWidth, img.naturalHeight, maxDimension)
   const canvas = document.createElement('canvas')
   canvas.width = scaled.width
   canvas.height = scaled.height
@@ -93,7 +103,7 @@ async function compressWithCanvas(
   let quality = 0.92
   let blob = await canvasToBlob(canvas, outputType, quality)
 
-  while (blob.size > TARGET_OUTPUT_BYTES && quality > 0.5) {
+  while (blob.size > targetOutputBytes && quality > 0.5) {
     quality -= 0.08
     blob = await canvasToBlob(canvas, outputType, quality)
   }
@@ -111,7 +121,10 @@ async function compressWithCanvas(
  * Compresses and normalizes photos of any common size for fast upload.
  * GIFs are passed through unchanged when under the size limit.
  */
-export async function compressImage(file: File): Promise<CompressedImage> {
+export async function compressImage(
+  file: File,
+  options: CompressOptions = {}
+): Promise<CompressedImage> {
   if (!isAcceptedType(file.type)) {
     throw new ImageValidationError('Please choose a JPEG, PNG, WebP, or GIF image.')
   }
@@ -133,7 +146,7 @@ export async function compressImage(file: File): Promise<CompressedImage> {
   const img = await loadImageFromFile(file)
 
   if (file.type === 'image/png') {
-    return compressWithCanvas(img, 'image/png', 'png')
+    return compressWithCanvas(img, 'image/png', 'png', options)
   }
 
   const prefersWebp =
@@ -141,8 +154,16 @@ export async function compressImage(file: File): Promise<CompressedImage> {
     document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp')
 
   if (prefersWebp) {
-    return compressWithCanvas(img, 'image/webp', 'webp')
+    return compressWithCanvas(img, 'image/webp', 'webp', options)
   }
 
-  return compressWithCanvas(img, 'image/jpeg', 'jpg')
+  return compressWithCanvas(img, 'image/jpeg', 'jpg', options)
+}
+
+/** Compresses an image for profile avatars — smaller dimensions and file size. */
+export async function compressAvatar(file: File): Promise<CompressedImage> {
+  return compressImage(file, {
+    maxDimension: AVATAR_MAX_DIMENSION,
+    targetOutputBytes: AVATAR_TARGET_OUTPUT_BYTES,
+  })
 }

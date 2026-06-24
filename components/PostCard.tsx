@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import type { Post, Profile, PostLike, CommentWithProfile } from '@/lib/types'
+import Avatar from '@/components/Avatar'
 import LikeButton from '@/components/LikeButton'
 import CommentSection from '@/components/CommentSection'
 import PostImage from '@/components/posts/PostImage'
-import { avatar, card, post as postStyles, typography } from '@/lib/styles'
+import { card, post as postStyles, typography } from '@/lib/styles'
 
 type Props = {
   post: Post
@@ -36,21 +37,12 @@ export default function PostCard({
   const likeCount = likes.filter((l) => l.post_id === post.id).length
   const isLiked = likes.some((l) => l.post_id === post.id && l.user_id === currentUserId)
   const postComments = comments.filter((c) => c.post_id === post.id)
-  const initials = (profile.display_name ?? 'U').charAt(0).toUpperCase()
 
   return (
     <article className={card.post}>
       <div className={postStyles.header}>
         <Link href={`/profile/${profile.id}`}>
-          {profile.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              alt={profile.display_name ?? 'User'}
-              className={avatar.md}
-            />
-          ) : (
-            <div className={avatar.initialsMd}>{initials}</div>
-          )}
+          <Avatar src={profile.avatar_url} name={profile.display_name} size="md" />
         </Link>
         <div>
           <Link href={`/profile/${profile.id}`} className={typography.link}>

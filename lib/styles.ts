@@ -135,6 +135,10 @@ export const profile = {
   header: 'flex items-start justify-between',
   headerInner: 'flex items-center gap-4',
   stats: 'flex gap-4 mt-2',
+  avatarPicker: 'flex items-center gap-4 mt-1.5',
+  avatarPickerActions: 'flex flex-col items-start gap-2',
+  avatarPickerStatus: 'text-xs text-muted-foreground italic',
+  editStatus: 'text-xs text-muted-foreground italic',
 }
 
 export const empty = {
