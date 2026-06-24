@@ -1,3 +1,6 @@
+'use client'
+
+import LoadingPhoto from '@/components/LoadingPhoto'
 import { cn, post } from '@/lib/styles'
 
 type Props = {
@@ -6,20 +9,10 @@ type Props = {
   bleedTop?: boolean
 }
 
-export default function PostImage({
-  src,
-  alt,
-  bleedTop = false,
-}: Props): JSX.Element {
+export default function PostImage({ src, alt, bleedTop = false }: Props): JSX.Element {
   return (
     <div className={cn(post.imageWrap, bleedTop && '-mt-5')}>
-      <img
-        src={src}
-        alt={alt}
-        className={post.image}
-        loading="eager"
-        decoding="async"
-      />
+      <LoadingPhoto src={src} alt={alt} className={post.image} priority />
     </div>
   )
 }

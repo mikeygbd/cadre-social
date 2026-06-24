@@ -1,3 +1,6 @@
+'use client'
+
+import LoadingPhoto from '@/components/LoadingPhoto'
 import { post } from '@/lib/styles'
 
 type Props = {
@@ -31,7 +34,12 @@ function TrashIcon(): JSX.Element {
 export default function PostImagePreview({ previewUrl, disabled, onRemove }: Props): JSX.Element {
   return (
     <div className={post.mediaHero}>
-      <img src={previewUrl} alt="Selected photo preview" className={post.mediaImage} />
+      <LoadingPhoto
+        src={previewUrl}
+        alt="Selected photo preview"
+        className={post.mediaImage}
+        priority
+      />
       <button
         type="button"
         onClick={onRemove}

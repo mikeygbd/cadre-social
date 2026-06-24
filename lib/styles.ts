@@ -140,8 +140,12 @@ export const post = {
   commentText: 'text-sm leading-snug',
   commentAuthor: 'font-semibold text-foreground mr-1.5',
   commentBody: 'text-muted-foreground',
-  imageWrap: '-mx-5 overflow-hidden border-y border-border-subtle bg-surface-elevated',
+  imageWrap: 'relative -mx-5 overflow-hidden border-y border-border-subtle bg-surface-elevated',
   image: 'w-full aspect-[4/3] object-cover block',
+  photoLoader:
+    'absolute inset-0 z-[1] flex items-center justify-center bg-surface-elevated',
+  photoSpinner:
+    'h-7 w-7 animate-spin rounded-full border-2 border-border-subtle border-t-accent',
   imageRemove:
     'absolute top-3 right-3 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-black/50 border border-white/20 text-white hover:bg-black/70 transition-colors backdrop-blur-sm disabled:opacity-50',
   imagePickerRow: 'mb-3',
