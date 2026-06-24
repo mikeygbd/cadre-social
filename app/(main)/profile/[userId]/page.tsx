@@ -5,6 +5,7 @@ import Avatar from '@/components/Avatar'
 import PostCard from '@/components/PostCard'
 import type { CommentWithProfile, Post, PostComment, PostLike, Profile } from '@/lib/types'
 import FollowButton from '@/components/FollowButton'
+import PostHashScroller from '@/components/notifications/PostHashScroller'
 import {
   card,
   empty,
@@ -128,6 +129,7 @@ export default async function ProfilePage({
 
   return (
     <div>
+      <PostHashScroller />
       <div className={`${card.paddedLg} mb-6`}>
         <div className={profile.header}>
           <div className={profile.headerInner}>

@@ -139,7 +139,7 @@ export default function PostCard({
 
   if (heroImageUrl) {
     return (
-      <article className={card.postMedia}>
+      <article id={`post-${post.id}`} className={card.postMedia}>
         <PostMediaHero
           imageUrl={heroImageUrl}
           fallbackUrl={imageFallbackUrl}
@@ -164,7 +164,7 @@ export default function PostCard({
   }
 
   return (
-    <article className={card.post}>
+    <article id={`post-${post.id}`} className={card.post}>
       <div className={postStyles.header}>
         <Link href={`/profile/${profile.id}`}>
           <Avatar src={profile.avatar_url} name={profile.display_name} size="md" />

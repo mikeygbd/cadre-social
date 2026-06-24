@@ -16,7 +16,7 @@ export const layout = {
   container: 'max-w-2xl mx-auto px-4',
   main: 'max-w-2xl mx-auto px-4 py-6',
   stack: 'space-y-4',
-  nav: 'bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-10 w-full',
+  nav: 'bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-20 w-full',
   navInner: 'w-full px-6 sm:px-8 h-14 flex items-center justify-between',
   navBrand: 'text-lg font-semibold text-foreground tracking-tight hover:text-accent transition-colors',
   navLinks: 'flex items-center gap-5',
@@ -209,4 +209,27 @@ export const errorState = {
 export const landing = {
   content: 'text-center space-y-8 relative z-10',
   actions: 'flex gap-4 justify-center',
+}
+
+export const notifications = {
+  wrapper: 'relative',
+  bellBtn:
+    'relative p-1.5 rounded-xl text-muted hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+  bellIcon: 'h-5 w-5',
+  badge:
+    'absolute -top-1 -right-1 min-w-[1.125rem] h-[1.125rem] px-1 flex items-center justify-center rounded-full bg-accent text-white text-[10px] font-bold leading-none pointer-events-none',
+  dropdown:
+    'absolute right-0 top-full mt-2 w-80 max-h-[24rem] overflow-y-auto bg-surface rounded-2xl border border-border shadow-xl shadow-black/40 ring-1 ring-white/[0.06] z-50',
+  dropdownHeader:
+    'flex items-center justify-between px-4 py-3 border-b border-border sticky top-0 bg-surface/95 backdrop-blur-sm z-10',
+  dropdownTitle: 'text-sm font-semibold text-foreground',
+  markAllBtn: 'text-xs text-accent hover:text-accent-hover font-medium transition-colors',
+  item: 'flex items-start gap-3 px-4 py-3 hover:bg-surface-elevated transition-colors w-full text-left',
+  itemUnread: 'bg-accent/[0.06]',
+  itemContent: 'flex-1 min-w-0',
+  itemText: 'text-sm text-foreground leading-snug',
+  itemMeta: 'text-xs text-muted-foreground mt-0.5',
+  unreadDot: 'mt-2 w-2 h-2 rounded-full bg-accent shrink-0',
+  empty: 'px-4 py-10 text-center text-sm text-muted-foreground',
+  postHighlight: 'ring-2 ring-accent/60 ring-offset-2 ring-offset-background rounded-2xl transition-shadow duration-500',
 }

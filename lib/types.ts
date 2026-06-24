@@ -46,3 +46,20 @@ export type Follow = {
   following_id: string
   created_at: string
 }
+
+export type NotificationType = 'like' | 'comment'
+
+export type Notification = {
+  id: string
+  recipient_id: string
+  actor_id: string
+  type: NotificationType
+  post_id: string
+  read_at: string | null
+  created_at: string
+}
+
+export type NotificationWithActor = Notification & {
+  actor_display_name: string | null
+  actor_avatar_url: string | null
+}
