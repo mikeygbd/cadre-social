@@ -13,9 +13,9 @@ build/
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 # misc
 .DS_Store
 *.pem
 npm-debug.log*
+.vercel

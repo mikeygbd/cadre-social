@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type { Post, Profile, PostLike, CommentWithProfile } from '@/lib/types'
 import LikeButton from '@/components/LikeButton'
 import CommentSection from '@/components/CommentSection'
-import { avatar, card, post, typography } from '@/lib/styles'
+import { avatar, card, post as postStyles, typography } from '@/lib/styles'
 
 type Props = {
   post: Post
@@ -31,7 +31,7 @@ export default function PostCard({ post, profile, likes, comments, currentUserId
 
   return (
     <article className={card.post}>
-      <div className={post.header}>
+      <div className={postStyles.header}>
         <Link href={`/profile/${profile.id}`}>
           {profile.avatar_url ? (
             <img
@@ -51,7 +51,7 @@ export default function PostCard({ post, profile, likes, comments, currentUserId
         </div>
       </div>
       <p className={typography.postBody}>{post.content}</p>
-      <div className={post.actions}>
+      <div className={postStyles.actions}>
         <LikeButton postId={post.id} initialCount={likeCount} initialLiked={isLiked} />
       </div>
       <CommentSection postId={post.id} initialComments={postComments} />
