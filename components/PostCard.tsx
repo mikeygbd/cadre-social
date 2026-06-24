@@ -51,13 +51,17 @@ export default function PostCard({
           <p className={typography.meta}>{formatRelativeTime(post.created_at)}</p>
         </div>
       </div>
-      <p className={typography.postBody}>{post.content}</p>
       {post.image_url && (
         <PostImage
           src={post.image_url}
           alt={`Photo by ${profile.display_name ?? 'user'}`}
           isPending={isPending}
         />
+      )}
+      {post.content && (
+        <p className={post.image_url ? `${typography.postBody} mt-3` : typography.postBody}>
+          {post.content}
+        </p>
       )}
       <div className={postStyles.actions}>
         {!isPending && (

@@ -116,12 +116,17 @@ export default async function ProfilePage({
         <div className={layout.stack}>
           {posts.map((post) => (
             <article key={post.id} className={card.post}>
-              {post.content && <p className={typography.postBody}>{post.content}</p>}
               {post.image_url && (
                 <PostImage
                   src={post.image_url}
                   alt={`Photo by ${profileRecord.display_name ?? 'user'}`}
+                  bleedTop
                 />
+              )}
+              {post.content && (
+                <p className={post.image_url ? `${typography.postBody} mt-3` : typography.postBody}>
+                  {post.content}
+                </p>
               )}
               <p className={`${typography.meta} mt-3`}>
                 {new Date(post.created_at).toLocaleDateString('en-US', {

@@ -111,9 +111,8 @@ export const post = {
   commentText: 'text-sm text-muted',
   commentAuthor: 'font-semibold text-foreground mr-1',
   commentForm: 'flex gap-2 items-center',
-  imageWrap: 'mt-3 overflow-hidden rounded-xl border border-border-subtle bg-surface-elevated',
-  image:
-    'w-full max-h-[32rem] object-contain bg-black/20',
+  imageWrap: '-mx-5 overflow-hidden border-y border-border-subtle bg-surface-elevated',
+  image: 'w-full aspect-[4/3] object-cover block',
   imagePending: 'opacity-90',
   imagePreviewRow: 'relative -mx-5 -mt-5 mb-4 overflow-hidden rounded-t-2xl border-b border-border-subtle bg-surface-elevated',
   imagePreviewWrap: 'relative w-full',
