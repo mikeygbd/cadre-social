@@ -3,7 +3,7 @@ import type { Post, Profile, PostLike, CommentWithProfile } from '@/lib/types'
 import Avatar from '@/components/Avatar'
 import LikeButton from '@/components/LikeButton'
 import CommentSection from '@/components/CommentSection'
-import PostImage from '@/components/posts/PostImage'
+import PostMediaHero from '@/components/posts/PostMediaHero'
 import { card, post as postStyles, typography } from '@/lib/styles'
 
 type Props = {
@@ -37,6 +37,32 @@ export default function PostCard({
   const likeCount = likes.filter((l) => l.post_id === post.id).length
   const isLiked = likes.some((l) => l.post_id === post.id && l.user_id === currentUserId)
   const postComments = comments.filter((c) => c.post_id === post.id)
+  const timeLabel = formatRelativeTime(post.created_at)
+  const hasImage = Boolean(post.image_url)
+
+  if (hasImage && post.image_url) {
+    return (
+      <article className={card.postMedia}>
+        <PostMediaHero
+          imageUrl={post.image_url}
+          profile={profile}
+          timeLabel={timeLabel}
+          isPending={isPending}
+        />
+        <div className={postStyles.mediaBody}>
+          {post.content && <p className={typography.postBody}>{post.content}</p>}
+          <div className={postStyles.actions}>
+            {!isPending && (
+              <LikeButton postId={post.id} initialCount={likeCount} initialLiked={isLiked} />
+            )}
+          </div>
+          {!isPending && (
+            <CommentSection postId={post.id} initialComments={postComments} />
+          )}
+        </div>
+      </article>
+    )
+  }
 
   return (
     <article className={card.post}>
@@ -48,29 +74,16 @@ export default function PostCard({
           <Link href={`/profile/${profile.id}`} className={typography.link}>
             {profile.display_name ?? 'Anonymous'}
           </Link>
-          <p className={typography.meta}>{formatRelativeTime(post.created_at)}</p>
+          <p className={typography.meta}>{timeLabel}</p>
         </div>
       </div>
-      {post.image_url && (
-        <PostImage
-          src={post.image_url}
-          alt={`Photo by ${profile.display_name ?? 'user'}`}
-          isPending={isPending}
-        />
-      )}
-      {post.content && (
-        <p className={post.image_url ? `${typography.postBody} mt-3` : typography.postBody}>
-          {post.content}
-        </p>
-      )}
+      {post.content && <p className={typography.postBody}>{post.content}</p>}
       <div className={postStyles.actions}>
         {!isPending && (
           <LikeButton postId={post.id} initialCount={likeCount} initialLiked={isLiked} />
         )}
       </div>
-      {!isPending && (
-        <CommentSection postId={post.id} initialComments={postComments} />
-      )}
+      {!isPending && <CommentSection postId={post.id} initialComments={postComments} />}
     </article>
   )
 }
