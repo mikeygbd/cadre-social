@@ -127,11 +127,8 @@ export const post = {
   imageWrap: '-mx-5 overflow-hidden border-y border-border-subtle bg-surface-elevated',
   image: 'w-full aspect-[4/3] object-cover block',
   imagePending: 'opacity-90',
-  imagePreviewRow: 'relative -mx-5 -mt-5 mb-4 overflow-hidden rounded-t-2xl border-b border-border-subtle bg-surface-elevated',
-  imagePreviewWrap: 'relative w-full',
-  imagePreview: 'w-full max-h-[20rem] object-contain bg-black/20',
   imageRemove:
-    'absolute top-2 right-2 w-7 h-7 rounded-full bg-surface/90 border border-border text-sm text-muted hover:text-destructive transition-colors backdrop-blur-sm',
+    'absolute top-3 right-3 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-black/50 border border-white/20 text-white hover:bg-black/70 transition-colors backdrop-blur-sm disabled:opacity-50',
   imagePickerRow: 'mb-3',
   imagePickerIcon:
     'p-2 rounded-xl text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',

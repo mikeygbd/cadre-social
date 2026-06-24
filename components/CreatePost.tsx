@@ -140,7 +140,10 @@ export default function CreatePost({
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`${card.padded} mb-5`}>
+    <form
+      onSubmit={handleSubmit}
+      className={previewUrl ? `${card.postMedia} mb-5` : `${card.padded} mb-5`}
+    >
       {previewUrl ? (
         <PostImagePreview previewUrl={previewUrl} disabled={loading} onRemove={clearImage} />
       ) : (
@@ -152,29 +155,31 @@ export default function CreatePost({
           />
         </div>
       )}
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="What's on your mind?"
-        rows={3}
-        className={form.textareaSm}
-      />
-      <div className="flex items-center justify-between mt-3">
-        <span
-          className={
-            isOverLimit ? 'text-xs text-destructive font-semibold' : 'text-xs text-muted-foreground'
-          }
-        >
-          {remaining}
-        </span>
-        <div className="flex items-center gap-1">
-          {error && <p className={`${form.errorInline} mr-2`}>{error}</p>}
-          {loading && hasImage && (
-            <span className={`${postStyles.pendingBadge} mr-1`}>Uploading…</span>
-          )}
-          <button type="submit" disabled={loading || !canSubmit} className={button.primarySm}>
-            {loading ? 'Posting…' : 'Post'}
-          </button>
+      <div className={previewUrl ? postStyles.mediaBody : undefined}>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="What's on your mind?"
+          rows={3}
+          className={form.textareaSm}
+        />
+        <div className="flex items-center justify-between mt-3">
+          <span
+            className={
+              isOverLimit ? 'text-xs text-destructive font-semibold' : 'text-xs text-muted-foreground'
+            }
+          >
+            {remaining}
+          </span>
+          <div className="flex items-center gap-1">
+            {error && <p className={`${form.errorInline} mr-2`}>{error}</p>}
+            {loading && hasImage && (
+              <span className={`${postStyles.pendingBadge} mr-1`}>Uploading…</span>
+            )}
+            <button type="submit" disabled={loading || !canSubmit} className={button.primarySm}>
+              {loading ? 'Posting…' : 'Post'}
+            </button>
+          </div>
         </div>
       </div>
     </form>
