@@ -1,9 +1,11 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 import type { Post, Profile, PostLike, CommentWithProfile } from '@/lib/types'
 import Avatar from '@/components/Avatar'
-import CommentSection from '@/components/CommentSection'
+import CommentBubble from '@/components/posts/CommentBubble'
+import CommentList from '@/components/posts/CommentList'
 import PostActionBar from '@/components/posts/PostActionBar'
 import PostMediaHero from '@/components/posts/PostMediaHero'
 import { card, post as postStyles, typography } from '@/lib/styles'
@@ -47,17 +49,42 @@ function PostEngagement({
   isPending,
   inlineCaption,
 }: EngagementProps): JSX.Element {
-  const commentInputId = `comment-${post.id}`
+  const [commentOpen, setCommentOpen] = useState(false)
+  const actionsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!commentOpen) return
+
+    function handlePointerDown(event: MouseEvent): void {
+      if (actionsRef.current?.contains(event.target as Node)) return
+      setCommentOpen(false)
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+    }
+  }, [commentOpen])
+
+  function toggleCommentBubble(): void {
+    setCommentOpen((open) => !open)
+  }
 
   return (
     <>
       {!isPending && (
-        <PostActionBar
-          postId={post.id}
-          likeCount={likeCount}
-          initialLiked={isLiked}
-          commentInputId={commentInputId}
-        />
+        <div ref={actionsRef} className={postStyles.engagementActions}>
+          <PostActionBar
+            postId={post.id}
+            likeCount={likeCount}
+            initialLiked={isLiked}
+            commentActive={commentOpen}
+            onCommentClick={toggleCommentBubble}
+          />
+          {commentOpen && (
+            <CommentBubble postId={post.id} onClose={() => setCommentOpen(false)} />
+          )}
+        </div>
       )}
       {!isPending && (
         <p className={postStyles.likesLine}>
@@ -75,12 +102,10 @@ function PostEngagement({
         ) : (
           <p className={typography.postBody}>{post.content}</p>
         ))}
-      {!isPending && (
-        <CommentSection
-          postId={post.id}
-          initialComments={postComments}
-          inputId={commentInputId}
-        />
+      {!isPending && postComments.length > 0 && (
+        <div className={postStyles.commentSection}>
+          <CommentList comments={postComments} />
+        </div>
       )}
     </>
   )

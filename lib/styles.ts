@@ -117,25 +117,29 @@ export const post = {
   mediaAuthor: 'block font-semibold text-white truncate hover:text-white/90 transition-colors',
   mediaTime: 'text-xs text-white/80',
   mediaBody: 'px-4 pt-2.5 pb-3',
+  engagementActions: 'relative',
   actionBar: 'flex items-center gap-4',
   actionIconBtn:
-    'text-foreground hover:text-muted-foreground transition-colors active:scale-95',
+    'text-foreground hover:text-muted-foreground transition-colors active:scale-95 rounded-lg p-1 -m-1',
+  actionIconBtnActive: 'text-accent bg-accent/10',
   actionIconSvg: 'h-6 w-6',
+  commentBubble: 'absolute left-0 right-0 bottom-full mb-2.5 z-20',
+  commentBubbleInner:
+    'flex items-center gap-2 rounded-2xl border border-border bg-surface-elevated/95 backdrop-blur-md shadow-xl shadow-black/40 px-3 py-2 ring-1 ring-white/[0.06]',
+  commentBubbleInput:
+    'flex-1 min-w-0 bg-transparent border-0 py-2 px-1 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-0',
+  commentBubbleSubmit:
+    'shrink-0 rounded-xl bg-accent px-3.5 py-1.5 text-sm font-semibold text-white hover:bg-accent-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
   likesLine: 'mt-1.5 text-sm font-semibold text-foreground',
   caption: 'mt-1.5 text-sm leading-snug whitespace-pre-wrap break-words',
   captionAuthor: 'font-semibold text-foreground hover:text-accent transition-colors mr-1.5',
   captionBody: 'text-muted-foreground',
   commentSection: 'mt-2',
-  commentList: 'space-y-2.5 mb-2 max-h-48 overflow-y-auto',
+  commentList: 'space-y-2.5 max-h-48 overflow-y-auto',
   commentItem: 'flex items-start gap-2.5',
   commentText: 'text-sm leading-snug',
   commentAuthor: 'font-semibold text-foreground mr-1.5',
   commentBody: 'text-muted-foreground',
-  commentForm: 'flex items-center gap-2 pt-2 border-t border-border-subtle/60',
-  commentInput:
-    'flex-1 min-w-0 bg-transparent border-0 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-0',
-  commentSubmit:
-    'text-sm font-semibold text-accent hover:text-accent-hover transition-colors disabled:opacity-40 shrink-0',
   imageWrap: '-mx-5 overflow-hidden border-y border-border-subtle bg-surface-elevated',
   image: 'w-full aspect-[4/3] object-cover block',
   imagePending: 'opacity-90',

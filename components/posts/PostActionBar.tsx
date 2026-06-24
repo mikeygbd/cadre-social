@@ -1,13 +1,14 @@
 'use client'
 
 import LikeButton from '@/components/LikeButton'
-import { post } from '@/lib/styles'
+import { cn, post } from '@/lib/styles'
 
 type Props = {
   postId: string
   likeCount: number
   initialLiked: boolean
-  commentInputId: string
+  commentActive: boolean
+  onCommentClick: () => void
 }
 
 function CommentIcon(): JSX.Element {
@@ -32,13 +33,9 @@ export default function PostActionBar({
   postId,
   likeCount,
   initialLiked,
-  commentInputId,
+  commentActive,
+  onCommentClick,
 }: Props): JSX.Element {
-  function focusCommentInput(): void {
-    const input = document.getElementById(commentInputId)
-    input?.focus()
-  }
-
   return (
     <div className={post.actionBar}>
       <LikeButton
@@ -49,9 +46,10 @@ export default function PostActionBar({
       />
       <button
         type="button"
-        onClick={focusCommentInput}
+        onClick={onCommentClick}
         aria-label="Comment"
-        className={post.actionIconBtn}
+        aria-expanded={commentActive}
+        className={cn(post.actionIconBtn, commentActive && post.actionIconBtnActive)}
       >
         <CommentIcon />
       </button>
