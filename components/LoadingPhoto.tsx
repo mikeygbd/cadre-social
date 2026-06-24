@@ -82,7 +82,7 @@ export default function LoadingPhoto({
         aria-hidden={hideFromScreenReaders}
         className={cn(
           className,
-          Boolean(placeholderSrc) && 'absolute inset-0',
+          Boolean(placeholderSrc) && 'absolute inset-0 h-full w-full max-h-none aspect-auto',
           'transition-opacity duration-150',
           loaded ? 'opacity-100' : 'opacity-0'
         )}

@@ -110,8 +110,8 @@ export const avatar = {
 
 export const post = {
   header: 'flex items-center gap-3 mb-3',
-  mediaHero: 'relative w-full aspect-[4/5] max-h-[28rem] overflow-hidden bg-surface-elevated',
-  mediaImage: 'absolute inset-0 w-full h-full object-cover',
+  mediaHero: 'relative w-full overflow-hidden bg-surface-elevated',
+  mediaImage: 'w-full aspect-[4/5] max-h-[28rem] object-cover block',
   mediaHeader: 'absolute inset-x-0 top-0 z-10 p-4 pointer-events-none',
   mediaHeaderPill:
     'inline-flex items-center gap-3 rounded-full bg-black/50 backdrop-blur-md pl-1 pr-4 py-1 pointer-events-auto',

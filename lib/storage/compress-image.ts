@@ -98,21 +98,53 @@ function getOutputFormat(): OutputFormat {
   return cachedOutputFormat
 }
 
+async function readImageDimensions(
+  file: File
+): Promise<{ width: number; height: number }> {
+  if (typeof createImageBitmap === 'function') {
+    const probe = await createImageBitmap(file)
+    const dimensions = { width: probe.width, height: probe.height }
+    probe.close()
+    return dimensions
+  }
+
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = (): void => {
+      URL.revokeObjectURL(url)
+      resolve({ width: img.naturalWidth, height: img.naturalHeight })
+    }
+    img.onerror = (): void => {
+      URL.revokeObjectURL(url)
+      reject(new ImageValidationError('Could not read this image file.'))
+    }
+    img.src = url
+  })
+}
+
 async function decodeAtMaxDimension(
   file: File,
   maxDimension: number
 ): Promise<{ source: CanvasImageSource; width: number; height: number; cleanup: () => void }> {
+  const natural = await readImageDimensions(file)
+  const scaled = scaleDimensions(natural.width, natural.height, maxDimension)
+  const needsResize = scaled.width !== natural.width || scaled.height !== natural.height
+
   if (typeof createImageBitmap === 'function') {
     try {
-      const bitmap = await createImageBitmap(file, {
-        resizeWidth: maxDimension,
-        resizeHeight: maxDimension,
-        resizeQuality: 'medium',
-      })
+      const bitmap = needsResize
+        ? await createImageBitmap(file, {
+            resizeWidth: scaled.width,
+            resizeHeight: scaled.height,
+            resizeQuality: 'medium',
+          })
+        : await createImageBitmap(file)
+
       return {
         source: bitmap,
-        width: bitmap.width,
-        height: bitmap.height,
+        width: scaled.width,
+        height: scaled.height,
         cleanup: () => bitmap.close(),
       }
     } catch {
@@ -125,7 +157,6 @@ async function decodeAtMaxDimension(
     const img = new Image()
     img.onload = (): void => {
       URL.revokeObjectURL(url)
-      const scaled = scaleDimensions(img.naturalWidth, img.naturalHeight, maxDimension)
       resolve({
         source: img,
         width: scaled.width,
