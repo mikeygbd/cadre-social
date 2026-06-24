@@ -25,15 +25,10 @@ export default function PostMediaHero({
         loading="lazy"
         decoding="async"
       />
-      <div className={post.mediaGradient} aria-hidden="true" />
+      <div className={post.mediaOverlay} aria-hidden="true" />
       <div className={post.mediaHeader}>
         <Link href={`/profile/${profile.id}`} className="flex-shrink-0">
-          <Avatar
-            src={profile.avatar_url}
-            name={profile.display_name}
-            size="md"
-            className={post.mediaAvatar}
-          />
+          <Avatar src={profile.avatar_url} name={profile.display_name} size="md" />
         </Link>
         <div className="min-w-0">
           <Link href={`/profile/${profile.id}`} className={post.mediaAuthor}>

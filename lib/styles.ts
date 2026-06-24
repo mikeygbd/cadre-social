@@ -111,14 +111,11 @@ export const avatar = {
 export const post = {
   header: 'flex items-center gap-3 mb-4',
   mediaHero: 'relative w-full',
-  mediaImage: 'w-full h-44 sm:h-48 object-cover block',
-  mediaGradient:
-    'absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-transparent pointer-events-none',
+  mediaImage: 'w-full aspect-[3/4] object-cover block',
+  mediaOverlay: 'absolute inset-0 bg-black/35 pointer-events-none',
   mediaHeader: 'absolute inset-x-0 top-0 z-10 flex items-center gap-3 p-4',
-  mediaAuthor:
-    'block font-semibold text-white truncate hover:text-white/90 transition-colors [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]',
-  mediaTime: 'text-xs text-white/75 [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]',
-  mediaAvatar: 'ring-2 ring-white/30 shadow-md shadow-black/40',
+  mediaAuthor: 'block font-semibold text-white truncate hover:text-white/90 transition-colors',
+  mediaTime: 'text-xs text-white/80',
   mediaBody: 'px-5 pt-4 pb-5',
   actions: 'mt-4 pt-4 border-t border-border-subtle',
   comments: 'mt-4 pt-4 border-t border-border',
