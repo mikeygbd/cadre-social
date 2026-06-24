@@ -67,7 +67,7 @@ export default function CommentSection({ postId, initialComments, inputId }: Pro
                 <span className={post.commentAuthor}>
                   {comment.display_name ?? 'Anonymous'}
                 </span>
-                {comment.content}
+                <span className={post.commentBody}>{comment.content}</span>
               </p>
             </li>
           ))}

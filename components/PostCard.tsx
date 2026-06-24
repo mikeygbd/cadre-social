@@ -59,7 +59,7 @@ function PostEngagement({
           commentInputId={commentInputId}
         />
       )}
-      {!isPending && likeCount > 0 && (
+      {!isPending && (
         <p className={postStyles.likesLine}>
           {likeCount} {likeCount === 1 ? 'like' : 'likes'}
         </p>
@@ -70,7 +70,7 @@ function PostEngagement({
             <Link href={`/profile/${profile.id}`} className={postStyles.captionAuthor}>
               {profile.display_name ?? 'Anonymous'}
             </Link>
-            <span>{post.content}</span>
+            <span className={postStyles.captionBody}>{post.content}</span>
           </p>
         ) : (
           <p className={typography.postBody}>{post.content}</p>
