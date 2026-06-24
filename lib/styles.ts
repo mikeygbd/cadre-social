@@ -109,21 +109,31 @@ export const avatar = {
 }
 
 export const post = {
-  header: 'flex items-center gap-3 mb-4',
-  mediaHero: 'relative w-full',
-  mediaImage: 'w-full aspect-[3/4] object-cover block',
+  header: 'flex items-center gap-3 mb-3',
+  mediaHero: 'relative w-full aspect-[4/5] max-h-[28rem] overflow-hidden',
+  mediaImage: 'absolute inset-0 w-full h-full object-cover',
   mediaOverlay: 'absolute inset-0 bg-black/35 pointer-events-none',
   mediaHeader: 'absolute inset-x-0 top-0 z-10 flex items-center gap-3 p-4',
   mediaAuthor: 'block font-semibold text-white truncate hover:text-white/90 transition-colors',
   mediaTime: 'text-xs text-white/80',
-  mediaBody: 'px-5 pt-4 pb-5',
-  actions: 'mt-4 pt-4 border-t border-border-subtle',
-  comments: 'mt-4 pt-4 border-t border-border',
-  commentList: 'space-y-3 mb-4',
-  commentItem: 'flex items-start gap-2.5',
-  commentText: 'text-sm text-muted',
+  mediaBody: 'px-4 pt-2.5 pb-3',
+  actionBar: 'flex items-center gap-4',
+  actionIconBtn:
+    'text-foreground hover:text-muted-foreground transition-colors active:scale-95',
+  actionIconSvg: 'h-6 w-6',
+  likesLine: 'mt-1.5 text-sm font-semibold text-foreground',
+  caption: 'mt-1.5 text-sm text-foreground leading-snug whitespace-pre-wrap break-words',
+  captionAuthor: 'font-semibold hover:text-accent transition-colors mr-1.5',
+  commentSection: 'mt-2',
+  commentList: 'space-y-2 mb-2 max-h-48 overflow-y-auto',
+  commentItem: 'flex items-start gap-2',
+  commentText: 'text-sm text-foreground/90 leading-snug',
   commentAuthor: 'font-semibold text-foreground mr-1',
-  commentForm: 'flex gap-2 items-center',
+  commentForm: 'flex items-center gap-2 pt-2 border-t border-border-subtle/60',
+  commentInput:
+    'flex-1 min-w-0 bg-transparent border-0 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-0',
+  commentSubmit:
+    'text-sm font-semibold text-accent hover:text-accent-hover transition-colors disabled:opacity-40 shrink-0',
   imageWrap: '-mx-5 overflow-hidden border-y border-border-subtle bg-surface-elevated',
   image: 'w-full aspect-[4/3] object-cover block',
   imagePending: 'opacity-90',
@@ -136,9 +146,11 @@ export const post = {
 }
 
 export const like = {
+  iconBtn: 'flex items-center gap-1.5 transition-colors active:scale-95',
+  icon: 'h-6 w-6 shrink-0',
   base: 'flex items-center gap-1.5 text-sm transition-colors',
   active: 'text-rose-400',
-  inactive: 'text-muted-foreground hover:text-rose-400',
+  inactive: 'text-foreground hover:text-muted-foreground',
 }
 
 export const profile = {

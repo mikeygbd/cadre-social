@@ -1,8 +1,10 @@
+'use client'
+
 import Link from 'next/link'
 import type { Post, Profile, PostLike, CommentWithProfile } from '@/lib/types'
 import Avatar from '@/components/Avatar'
-import LikeButton from '@/components/LikeButton'
 import CommentSection from '@/components/CommentSection'
+import PostActionBar from '@/components/posts/PostActionBar'
 import PostMediaHero from '@/components/posts/PostMediaHero'
 import { card, post as postStyles, typography } from '@/lib/styles'
 
@@ -24,6 +26,64 @@ function formatRelativeTime(dateStr: string): string {
   if (hours < 24) return `${hours}h ago`
   const days = Math.floor(hours / 24)
   return `${days}d ago`
+}
+
+type EngagementProps = {
+  post: Post
+  profile: Profile
+  likeCount: number
+  isLiked: boolean
+  postComments: CommentWithProfile[]
+  isPending: boolean
+  inlineCaption: boolean
+}
+
+function PostEngagement({
+  post,
+  profile,
+  likeCount,
+  isLiked,
+  postComments,
+  isPending,
+  inlineCaption,
+}: EngagementProps): JSX.Element {
+  const commentInputId = `comment-${post.id}`
+
+  return (
+    <>
+      {!isPending && (
+        <PostActionBar
+          postId={post.id}
+          likeCount={likeCount}
+          initialLiked={isLiked}
+          commentInputId={commentInputId}
+        />
+      )}
+      {!isPending && likeCount > 0 && (
+        <p className={postStyles.likesLine}>
+          {likeCount} {likeCount === 1 ? 'like' : 'likes'}
+        </p>
+      )}
+      {post.content &&
+        (inlineCaption ? (
+          <p className={postStyles.caption}>
+            <Link href={`/profile/${profile.id}`} className={postStyles.captionAuthor}>
+              {profile.display_name ?? 'Anonymous'}
+            </Link>
+            <span>{post.content}</span>
+          </p>
+        ) : (
+          <p className={typography.postBody}>{post.content}</p>
+        ))}
+      {!isPending && (
+        <CommentSection
+          postId={post.id}
+          initialComments={postComments}
+          inputId={commentInputId}
+        />
+      )}
+    </>
+  )
 }
 
 export default function PostCard({
@@ -50,15 +110,15 @@ export default function PostCard({
           isPending={isPending}
         />
         <div className={postStyles.mediaBody}>
-          {post.content && <p className={typography.postBody}>{post.content}</p>}
-          <div className={postStyles.actions}>
-            {!isPending && (
-              <LikeButton postId={post.id} initialCount={likeCount} initialLiked={isLiked} />
-            )}
-          </div>
-          {!isPending && (
-            <CommentSection postId={post.id} initialComments={postComments} />
-          )}
+          <PostEngagement
+            post={post}
+            profile={profile}
+            likeCount={likeCount}
+            isLiked={isLiked}
+            postComments={postComments}
+            isPending={isPending}
+            inlineCaption
+          />
         </div>
       </article>
     )
@@ -77,13 +137,15 @@ export default function PostCard({
           <p className={typography.meta}>{timeLabel}</p>
         </div>
       </div>
-      {post.content && <p className={typography.postBody}>{post.content}</p>}
-      <div className={postStyles.actions}>
-        {!isPending && (
-          <LikeButton postId={post.id} initialCount={likeCount} initialLiked={isLiked} />
-        )}
-      </div>
-      {!isPending && <CommentSection postId={post.id} initialComments={postComments} />}
+      <PostEngagement
+        post={post}
+        profile={profile}
+        likeCount={likeCount}
+        isLiked={isLiked}
+        postComments={postComments}
+        isPending={isPending}
+        inlineCaption={false}
+      />
     </article>
   )
 }
