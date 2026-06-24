@@ -1,11 +1,13 @@
 import Link from 'next/link'
-import type { Post, Profile, PostLike } from '@/lib/types'
+import type { Post, Profile, PostLike, CommentWithProfile } from '@/lib/types'
 import LikeButton from '@/components/LikeButton'
+import CommentSection from '@/components/CommentSection'
 
 type Props = {
   post: Post
   profile: Profile
   likes: PostLike[]
+  comments: CommentWithProfile[]
   currentUserId: string
 }
 
@@ -20,9 +22,10 @@ function formatRelativeTime(dateStr: string): string {
   return `${days}d ago`
 }
 
-export default function PostCard({ post, profile, likes, currentUserId }: Props): JSX.Element {
+export default function PostCard({ post, profile, likes, comments, currentUserId }: Props): JSX.Element {
   const likeCount = likes.filter((l) => l.post_id === post.id).length
   const isLiked = likes.some((l) => l.post_id === post.id && l.user_id === currentUserId)
+  const postComments = comments.filter((c) => c.post_id === post.id)
   const initials = (profile.display_name ?? 'U').charAt(0).toUpperCase()
 
   return (
@@ -59,6 +62,7 @@ export default function PostCard({ post, profile, likes, currentUserId }: Props)
           initialLiked={isLiked}
         />
       </div>
+      <CommentSection postId={post.id} initialComments={postComments} />
     </article>
   )
 }
