@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { revalidateFollowing } from '@/lib/actions/follow'
 import { button, cn } from '@/lib/styles'
 
 type Props = {
@@ -10,6 +12,7 @@ type Props = {
 }
 
 export default function FollowButton({ targetUserId, initialIsFollowing }: Props): JSX.Element {
+  const router = useRouter()
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const inFlight = useRef(false)
 
@@ -31,18 +34,27 @@ export default function FollowButton({ targetUserId, initialIsFollowing }: Props
     const wasFollowing = isFollowing
     setIsFollowing(!wasFollowing)
 
+    let error: { message: string } | null = null
+
     if (!wasFollowing) {
-      const { error } = await supabase
+      const result = await supabase
         .from('follows')
         .insert({ follower_id: user.id, following_id: targetUserId })
-      if (error) setIsFollowing(wasFollowing)
+      error = result.error
     } else {
-      const { error } = await supabase
+      const result = await supabase
         .from('follows')
         .delete()
         .eq('follower_id', user.id)
         .eq('following_id', targetUserId)
-      if (error) setIsFollowing(wasFollowing)
+      error = result.error
+    }
+
+    if (error) {
+      setIsFollowing(wasFollowing)
+    } else {
+      await revalidateFollowing()
+      router.refresh()
     }
 
     inFlight.current = false
