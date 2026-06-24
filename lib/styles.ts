@@ -24,14 +24,18 @@ export const layout = {
   fullBleed: 'w-screen relative left-1/2 -translate-x-1/2',
 }
 
+/** Shared card surface — lifted from page background with border, shadow, and subtle highlight. */
+const cardShell =
+  'bg-surface rounded-2xl border border-border shadow-lg shadow-black/40 ring-1 ring-white/[0.06]'
+
 export const card = {
-  base: 'bg-surface rounded-2xl border border-border',
-  shadow: 'bg-surface rounded-2xl border border-border shadow-lg shadow-black/20',
-  padded: 'bg-surface rounded-2xl border border-border p-5',
-  paddedLg: 'bg-surface rounded-2xl border border-border p-6',
-  auth: 'bg-surface-elevated rounded-2xl border border-border shadow-xl shadow-black/30 p-8 w-full max-w-md',
-  post: 'bg-surface rounded-2xl border border-border p-5',
-  postMedia: 'bg-surface rounded-2xl border border-border overflow-hidden',
+  base: cardShell,
+  shadow: cardShell,
+  padded: `${cardShell} p-5`,
+  paddedLg: `${cardShell} p-6`,
+  auth: `${cardShell} shadow-xl shadow-black/50 p-8 w-full max-w-md`,
+  post: `${cardShell} p-5`,
+  postMedia: `${cardShell} overflow-hidden`,
 }
 
 export const button = {
@@ -173,8 +177,8 @@ export const empty = {
 
 export const skeleton = {
   wrapper: 'animate-pulse',
-  card: 'bg-surface rounded-2xl border border-border p-5',
-  cardLg: 'bg-surface rounded-2xl border border-border p-6',
+  card: `${cardShell} p-5`,
+  cardLg: `${cardShell} p-6`,
   bar: 'bg-border rounded-lg',
   barLight: 'bg-border-subtle rounded-lg',
   avatarMd: 'w-10 h-10 rounded-full bg-border',
