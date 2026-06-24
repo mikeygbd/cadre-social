@@ -141,6 +141,17 @@ export default function CreatePost({
 
   return (
     <form onSubmit={handleSubmit} className={`${card.padded} mb-5`}>
+      {previewUrl ? (
+        <PostImagePreview previewUrl={previewUrl} disabled={loading} onRemove={clearImage} />
+      ) : (
+        <div className={postStyles.imagePickerRow}>
+          <PostImagePicker
+            disabled={loading}
+            isProcessing={isProcessingImage}
+            onFileSelected={handleFileSelected}
+          />
+        </div>
+      )}
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
@@ -148,9 +159,6 @@ export default function CreatePost({
         rows={3}
         className={form.textareaSm}
       />
-      {previewUrl && (
-        <PostImagePreview previewUrl={previewUrl} disabled={loading} onRemove={clearImage} />
-      )}
       <div className="flex items-center justify-between mt-3">
         <span
           className={
@@ -164,11 +172,6 @@ export default function CreatePost({
           {loading && hasImage && (
             <span className={`${postStyles.pendingBadge} mr-1`}>Uploading…</span>
           )}
-          <PostImagePicker
-            disabled={loading}
-            isProcessing={isProcessingImage}
-            onFileSelected={handleFileSelected}
-          />
           <button type="submit" disabled={loading || !canSubmit} className={button.primarySm}>
             {loading ? 'Posting…' : 'Post'}
           </button>

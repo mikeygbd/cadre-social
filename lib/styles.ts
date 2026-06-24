@@ -115,11 +115,12 @@ export const post = {
   image:
     'w-full max-h-[32rem] object-contain bg-black/20',
   imagePending: 'opacity-90',
-  imagePreviewRow: 'mt-3',
-  imagePreviewWrap: 'relative inline-block',
-  imagePreview: 'h-20 w-20 rounded-lg object-cover border border-border',
+  imagePreviewRow: 'relative -mx-5 -mt-5 mb-4 overflow-hidden rounded-t-2xl border-b border-border-subtle bg-surface-elevated',
+  imagePreviewWrap: 'relative w-full',
+  imagePreview: 'w-full max-h-[20rem] object-contain bg-black/20',
   imageRemove:
-    'absolute -top-2 -right-2 w-5 h-5 rounded-full bg-surface-elevated border border-border text-xs text-muted hover:text-destructive transition-colors',
+    'absolute top-2 right-2 w-7 h-7 rounded-full bg-surface/90 border border-border text-sm text-muted hover:text-destructive transition-colors backdrop-blur-sm',
+  imagePickerRow: 'mb-3',
   imagePickerIcon:
     'p-2 rounded-xl text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
   pendingBadge: 'text-xs text-muted-foreground italic',
