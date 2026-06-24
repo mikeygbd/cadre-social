@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { button, cn } from '@/lib/styles'
 
 type Props = {
   targetUserId: string
@@ -50,11 +51,7 @@ export default function FollowButton({ targetUserId, initialIsFollowing }: Props
   return (
     <button
       onClick={handleToggle}
-      className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-        isFollowing
-          ? 'bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600 border border-gray-200'
-          : 'bg-blue-600 text-white hover:bg-blue-700'
-      }`}
+      className={cn(isFollowing ? button.followActive : button.followInactive)}
     >
       {isFollowing ? 'Following' : 'Follow'}
     </button>

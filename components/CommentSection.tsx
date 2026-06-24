@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { CommentWithProfile } from '@/lib/types'
+import { avatar, button, form, post } from '@/lib/styles'
 
 type Props = {
   postId: string
@@ -47,26 +48,24 @@ export default function CommentSection({ postId, initialComments }: Props): JSX.
   }
 
   return (
-    <div className="mt-3 pt-3 border-t border-gray-100">
+    <div className={post.comments}>
       {initialComments.length > 0 && (
-        <ul className="space-y-2 mb-3">
+        <ul className={post.commentList}>
           {initialComments.map((comment) => {
             const initial = (comment.display_name ?? 'U').charAt(0).toUpperCase()
             return (
-              <li key={comment.id} className="flex items-start gap-2">
+              <li key={comment.id} className={post.commentItem}>
                 {comment.avatar_url ? (
                   <img
                     src={comment.avatar_url}
                     alt={comment.display_name ?? 'User'}
-                    className="w-6 h-6 rounded-full object-cover flex-shrink-0 mt-0.5"
+                    className={`${avatar.sm} mt-0.5`}
                   />
                 ) : (
-                  <div className="w-6 h-6 rounded-full bg-blue-400 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 mt-0.5">
-                    {initial}
-                  </div>
+                  <div className={`${avatar.initialsSm} mt-0.5`}>{initial}</div>
                 )}
-                <p className="text-sm text-gray-700">
-                  <span className="font-semibold text-gray-900 mr-1">
+                <p className={post.commentText}>
+                  <span className={post.commentAuthor}>
                     {comment.display_name ?? 'Anonymous'}
                   </span>
                   {comment.content}
@@ -77,23 +76,19 @@ export default function CommentSection({ postId, initialComments }: Props): JSX.
         </ul>
       )}
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className={post.commentForm}>
         <input
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Add a comment…"
-          className="flex-1 text-sm border border-gray-200 rounded-full px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className={form.commentInput}
         />
-        <button
-          type="submit"
-          disabled={submitting || !text.trim()}
-          className="text-sm text-blue-600 font-medium hover:text-blue-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
+        <button type="submit" disabled={submitting || !text.trim()} className={button.text}>
           {submitting ? '…' : 'Post'}
         </button>
       </form>
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      {error && <p className={`${form.errorInline} mt-1`}>{error}</p>}
     </div>
   )
 }

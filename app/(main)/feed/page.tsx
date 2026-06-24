@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import PostCard from '@/components/PostCard'
 import CreatePost from '@/components/CreatePost'
 import type { Post, Profile, PostLike, PostComment, CommentWithProfile } from '@/lib/types'
+import { empty, layout } from '@/lib/styles'
 
 export default async function FeedPage(): Promise<JSX.Element> {
   const supabase = await createClient()
@@ -83,9 +84,9 @@ export default async function FeedPage(): Promise<JSX.Element> {
     <div>
       <CreatePost />
       {typedPosts.length === 0 ? (
-        <p className="text-center text-gray-400 py-12">No posts yet. Be the first!</p>
+        <p className={empty.message}>No posts yet. Be the first!</p>
       ) : (
-        <div className="space-y-4">
+        <div className={layout.stack}>
           {typedPosts.map((post) => {
             const profile = profileMap.get(post.user_id)
             if (!profile) return null

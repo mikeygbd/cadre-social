@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { cn, like } from '@/lib/styles'
 
 type Props = {
   postId: string
@@ -14,7 +15,6 @@ export default function LikeButton({ postId, initialCount, initialLiked }: Props
   const [likeCount, setLikeCount] = useState(initialCount)
   const inFlight = useRef(false)
 
-  // Sync when server re-renders with fresh data
   useEffect(() => {
     setLiked(initialLiked)
     setLikeCount(initialCount)
@@ -34,7 +34,6 @@ export default function LikeButton({ postId, initialCount, initialLiked }: Props
     const wasLiked = liked
     const nextLiked = !wasLiked
 
-    // Optimistic update
     setLiked(nextLiked)
     setLikeCount((c) => (nextLiked ? c + 1 : c - 1))
 
@@ -64,9 +63,7 @@ export default function LikeButton({ postId, initialCount, initialLiked }: Props
   return (
     <button
       onClick={handleToggle}
-      className={`flex items-center gap-1 text-sm transition-colors ${
-        liked ? 'text-red-500' : 'text-gray-400 hover:text-red-400'
-      }`}
+      className={cn(like.base, liked ? like.active : like.inactive)}
     >
       <span>{liked ? '♥' : '♡'}</span>
       <span>{likeCount}</span>

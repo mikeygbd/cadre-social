@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { Post, Profile, PostLike, CommentWithProfile } from '@/lib/types'
 import LikeButton from '@/components/LikeButton'
 import CommentSection from '@/components/CommentSection'
+import { avatar, card, post, typography } from '@/lib/styles'
 
 type Props = {
   post: Post
@@ -29,38 +30,29 @@ export default function PostCard({ post, profile, likes, comments, currentUserId
   const initials = (profile.display_name ?? 'U').charAt(0).toUpperCase()
 
   return (
-    <article className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-      <div className="flex items-center gap-3 mb-3">
+    <article className={card.post}>
+      <div className={post.header}>
         <Link href={`/profile/${profile.id}`}>
           {profile.avatar_url ? (
             <img
               src={profile.avatar_url}
               alt={profile.display_name ?? 'User'}
-              className="w-10 h-10 rounded-full object-cover"
+              className={avatar.md}
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-              {initials}
-            </div>
+            <div className={avatar.initialsMd}>{initials}</div>
           )}
         </Link>
         <div>
-          <Link
-            href={`/profile/${profile.id}`}
-            className="font-semibold text-gray-900 hover:text-blue-700 transition-colors"
-          >
+          <Link href={`/profile/${profile.id}`} className={typography.link}>
             {profile.display_name ?? 'Anonymous'}
           </Link>
-          <p className="text-xs text-gray-400">{formatRelativeTime(post.created_at)}</p>
+          <p className={typography.meta}>{formatRelativeTime(post.created_at)}</p>
         </div>
       </div>
-      <p className="text-gray-800 whitespace-pre-wrap break-words">{post.content}</p>
-      <div className="mt-3 pt-3 border-t border-gray-50">
-        <LikeButton
-          postId={post.id}
-          initialCount={likeCount}
-          initialLiked={isLiked}
-        />
+      <p className={typography.postBody}>{post.content}</p>
+      <div className={post.actions}>
+        <LikeButton postId={post.id} initialCount={likeCount} initialLiked={isLiked} />
       </div>
       <CommentSection postId={post.id} initialComments={postComments} />
     </article>
