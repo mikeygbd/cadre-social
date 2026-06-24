@@ -18,6 +18,9 @@ type Props = {
   comments: CommentWithProfile[]
   currentUserId: string
   isPending?: boolean
+  imageFallbackUrl?: string
+  remoteImageUrl?: string | null
+  onImageHandoffComplete?: () => void
 }
 
 function formatRelativeTime(dateStr: string): string {
@@ -124,21 +127,25 @@ export default function PostCard({
   comments,
   currentUserId,
   isPending = false,
+  imageFallbackUrl,
+  remoteImageUrl,
+  onImageHandoffComplete,
 }: Props): JSX.Element {
   const likeCount = likes.filter((l) => l.post_id === post.id).length
   const isLiked = likes.some((l) => l.post_id === post.id && l.user_id === currentUserId)
   const postComments = comments.filter((c) => c.post_id === post.id)
   const timeLabel = formatRelativeTime(post.created_at)
-  const hasImage = Boolean(post.image_url)
+  const heroImageUrl = remoteImageUrl ?? post.image_url
 
-  if (hasImage && post.image_url) {
+  if (heroImageUrl) {
     return (
       <article className={card.postMedia}>
         <PostMediaHero
-          imageUrl={post.image_url}
+          imageUrl={heroImageUrl}
+          fallbackUrl={imageFallbackUrl}
           profile={profile}
           timeLabel={timeLabel}
-          isPending={isPending}
+          onHandoffComplete={onImageHandoffComplete}
         />
         <div className={postStyles.mediaBody}>
           <PostEngagement

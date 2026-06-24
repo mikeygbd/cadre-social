@@ -13,7 +13,7 @@ const MAX_CHARS = 280
 
 type Props = {
   onOptimisticPost: (post: PendingPost) => void
-  onPostSuccess: (tempId: string, newPost: Post) => void
+  onPostSuccess: (tempId: string, newPost: Post, previewImageUrl?: string) => void
   onPostFailed: (tempId: string, error: string) => void
 }
 
@@ -180,7 +180,7 @@ export default function CreatePost({
         throw new Error(insertError?.message ?? 'Failed to create post.')
       }
 
-      onPostSuccess(tempId, newPost as Post)
+      onPostSuccess(tempId, newPost as Post, optimisticPreviewUrl)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create post.'
       onPostFailed(tempId, message)

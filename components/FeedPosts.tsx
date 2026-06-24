@@ -31,6 +31,7 @@ export default function FeedPosts({
   const router = useRouter()
   const [pendingPosts, setPendingPosts] = useState<PendingPost[]>([])
   const [postError, setPostError] = useState<string | null>(null)
+  const [imageHandoffs, setImageHandoffs] = useState<Record<string, string>>({})
 
   const profileMap = new Map<string, Profile>(profiles.map((p) => [p.id, p]))
 
@@ -39,15 +40,31 @@ export default function FeedPosts({
     setPendingPosts((prev) => [post, ...prev])
   }, [])
 
+  const releaseImageHandoff = useCallback((postId: string): void => {
+    setImageHandoffs((prev) => {
+      const url = prev[postId]
+      if (url) {
+        revokeBlobUrl(url)
+      }
+      const next = { ...prev }
+      delete next[postId]
+      return next
+    })
+  }, [])
+
   const handlePostSuccess = useCallback(
-    (tempId: string, newPost: Post): void => {
-      setPendingPosts((prev) => {
-        const match = prev.find((p) => p.tempId === tempId)
-        revokeBlobUrl(match?.previewImageUrl)
-        return prev.map((p) =>
-          p.tempId === tempId ? { ...newPost, tempId, isPending: false } : p
+    (tempId: string, newPost: Post, previewImageUrl?: string): void => {
+      if (previewImageUrl && newPost.image_url) {
+        setImageHandoffs((prev) => ({ ...prev, [newPost.id]: previewImageUrl }))
+      }
+
+      setPendingPosts((prev) =>
+        prev.map((p) =>
+          p.tempId === tempId
+            ? { ...newPost, tempId, isPending: false, previewImageUrl }
+            : p
         )
-      })
+      )
       router.refresh()
     },
     [router]
@@ -88,21 +105,24 @@ export default function FeedPosts({
             if (!profile || !currentUserProfile) return null
 
             const isPending = 'isPending' in post && post.isPending
-            const displayPost: Post =
-              isPending && post.previewImageUrl
-                ? { ...post, image_url: post.previewImageUrl }
-                : post
+            const previewImageUrl =
+              imageHandoffs[post.id] ??
+              ('previewImageUrl' in post ? post.previewImageUrl : undefined)
+            const remoteImageUrl = post.image_url
 
             return (
               <PostCard
                 key={'tempId' in post ? post.tempId : post.id}
-                post={displayPost}
+                post={post}
                 profile={profile}
                 currentUserProfile={currentUserProfile}
                 likes={likes}
                 comments={comments}
                 currentUserId={currentUserId}
                 isPending={isPending}
+                imageFallbackUrl={previewImageUrl}
+                remoteImageUrl={remoteImageUrl}
+                onImageHandoffComplete={() => releaseImageHandoff(post.id)}
               />
             )
           })}
