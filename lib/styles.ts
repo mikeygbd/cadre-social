@@ -155,16 +155,14 @@ export const profile = {
 }
 
 export const following = {
-  bar: 'w-full border-b border-border bg-surface/60 backdrop-blur-sm',
-  inner: 'flex items-center gap-5 px-6 sm:px-8 py-4 min-h-[5.5rem]',
-  title:
-    'text-xs font-semibold uppercase tracking-wider text-muted-foreground shrink-0 w-20 sm:w-24',
-  empty: 'text-sm text-muted-foreground truncate',
-  list: 'flex items-center gap-3 overflow-x-auto flex-1 pb-1 scrollbar-thin',
+  bar: 'w-full bg-surface/60 backdrop-blur-sm',
+  inner: 'flex flex-col gap-3 px-6 sm:px-8 py-4',
+  title: 'text-xs font-semibold uppercase tracking-wider text-muted-foreground',
+  empty: 'text-sm text-muted-foreground',
+  list: 'flex items-start gap-4 overflow-x-auto pb-1',
   listItem: 'shrink-0',
-  item: 'flex flex-col items-center gap-2 w-[4.5rem] group',
-  avatar:
-    'ring-2 ring-border shadow-lg shadow-black/30 transition-transform duration-200 group-hover:scale-105 group-hover:ring-accent/40',
+  item: 'flex flex-col items-center gap-2 w-[5.5rem] group',
+  avatar: 'shadow-lg shadow-black/30 transition-transform duration-200 group-hover:scale-105',
   name: 'text-xs text-muted text-center truncate w-full group-hover:text-accent transition-colors',
 }
 

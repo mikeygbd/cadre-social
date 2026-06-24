@@ -22,7 +22,7 @@ export default function FollowingBar({ profiles }: Props): JSX.Element {
                   <Avatar
                     src={profile.avatar_url}
                     name={profile.display_name}
-                    size="md"
+                    size="lg"
                     className={followingStyles.avatar}
                   />
                   <span className={followingStyles.name}>
