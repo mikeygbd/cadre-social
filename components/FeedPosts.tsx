@@ -67,7 +67,8 @@ export default function FeedPosts({
         <div className={layout.stack}>
           {allPosts.map((post) => {
             const profile = profileMap.get(post.user_id)
-            if (!profile) return null
+            const currentUserProfile = profileMap.get(currentUserId)
+            if (!profile || !currentUserProfile) return null
 
             const isPending = 'isPending' in post && post.isPending
             const displayPost: Post =
@@ -80,6 +81,7 @@ export default function FeedPosts({
                 key={'tempId' in post ? post.tempId : post.id}
                 post={displayPost}
                 profile={profile}
+                currentUserProfile={currentUserProfile}
                 likes={likes}
                 comments={comments}
                 currentUserId={currentUserId}

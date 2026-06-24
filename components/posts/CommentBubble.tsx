@@ -1,38 +1,30 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Avatar from '@/components/Avatar'
 import { form, post } from '@/lib/styles'
 
 type Props = {
   postId: string
-  onClose: () => void
+  avatarUrl: string | null
+  displayName: string | null
+  inputRef: React.RefObject<HTMLInputElement>
+  onFocusChange: (focused: boolean) => void
 }
 
-export default function CommentBubble({ postId, onClose }: Props): JSX.Element {
+export default function CommentBubble({
+  postId,
+  avatarUrl,
+  displayName,
+  inputRef,
+  onFocusChange,
+}: Props): JSX.Element {
   const router = useRouter()
-  const inputRef = useRef<HTMLInputElement>(null)
   const [text, setText] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
-
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent): void {
-      if (event.key === 'Escape') {
-        onClose()
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [onClose])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault()
@@ -63,30 +55,37 @@ export default function CommentBubble({ postId, onClose }: Props): JSX.Element {
 
     setText('')
     setSubmitting(false)
-    onClose()
     router.refresh()
   }
 
+  const hasText = text.trim().length > 0
+
   return (
-    <div className={post.commentBubble} role="dialog" aria-label="Write a comment">
-      <form onSubmit={handleSubmit} className={post.commentBubbleInner}>
+    <div className={post.commentBar}>
+      <form onSubmit={handleSubmit} className={post.commentBarInner}>
+        <Avatar src={avatarUrl} name={displayName} size="sm" className="shrink-0" />
         <input
           ref={inputRef}
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Write a comment…"
-          className={post.commentBubbleInput}
+          onFocus={() => onFocusChange(true)}
+          onBlur={() => onFocusChange(false)}
+          placeholder="Add a comment…"
+          className={post.commentBarInput}
+          aria-label="Add a comment"
         />
-        <button
-          type="submit"
-          disabled={submitting || !text.trim()}
-          className={post.commentBubbleSubmit}
-        >
-          {submitting ? '…' : 'Post'}
-        </button>
+        {hasText && (
+          <button
+            type="submit"
+            disabled={submitting}
+            className={post.commentBarSubmit}
+          >
+            {submitting ? '…' : 'Post'}
+          </button>
+        )}
       </form>
-      {error && <p className={`${form.errorInline} mt-1.5 px-1`}>{error}</p>}
+      {error && <p className={`${form.errorInline} mt-1.5`}>{error}</p>}
     </div>
   )
 }

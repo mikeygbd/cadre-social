@@ -34,13 +34,6 @@ export class ImageValidationError extends Error {
   }
 }
 
-type DecodedImage = {
-  source: CanvasImageSource
-  width: number
-  height: number
-  cleanup: () => void
-}
-
 function isAcceptedType(type: string): type is AcceptedImageType {
   return (ACCEPTED_IMAGE_TYPES as readonly string[]).includes(type)
 }
@@ -82,10 +75,40 @@ function scaleDimensions(
   }
 }
 
-async function decodeImage(file: File): Promise<DecodedImage> {
+type OutputFormat = {
+  type: 'image/jpeg' | 'image/webp'
+  extension: string
+}
+
+let cachedOutputFormat: OutputFormat | null = null
+
+function getOutputFormat(): OutputFormat {
+  if (cachedOutputFormat) {
+    return cachedOutputFormat
+  }
+
+  const useWebp =
+    typeof document !== 'undefined' &&
+    document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp')
+
+  cachedOutputFormat = useWebp
+    ? { type: 'image/webp', extension: 'webp' }
+    : { type: 'image/jpeg', extension: 'jpg' }
+
+  return cachedOutputFormat
+}
+
+async function decodeAtMaxDimension(
+  file: File,
+  maxDimension: number
+): Promise<{ source: CanvasImageSource; width: number; height: number; cleanup: () => void }> {
   if (typeof createImageBitmap === 'function') {
     try {
-      const bitmap = await createImageBitmap(file)
+      const bitmap = await createImageBitmap(file, {
+        resizeWidth: maxDimension,
+        resizeHeight: maxDimension,
+        resizeQuality: 'medium',
+      })
       return {
         source: bitmap,
         width: bitmap.width,
@@ -93,7 +116,7 @@ async function decodeImage(file: File): Promise<DecodedImage> {
         cleanup: () => bitmap.close(),
       }
     } catch {
-      // Fall back to HTMLImageElement for formats createImageBitmap rejects.
+      // Fall back to full decode below.
     }
   }
 
@@ -102,10 +125,11 @@ async function decodeImage(file: File): Promise<DecodedImage> {
     const img = new Image()
     img.onload = (): void => {
       URL.revokeObjectURL(url)
+      const scaled = scaleDimensions(img.naturalWidth, img.naturalHeight, maxDimension)
       resolve({
         source: img,
-        width: img.naturalWidth,
-        height: img.naturalHeight,
+        width: scaled.width,
+        height: scaled.height,
         cleanup: () => {},
       })
     }
@@ -133,64 +157,40 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality: number):
   })
 }
 
-function prefersWebp(): boolean {
-  return (
-    typeof document !== 'undefined' &&
-    document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp')
-  )
-}
-
-async function renderToBlob(
-  decoded: DecodedImage,
-  maxDimension: number,
-  minDimension: number,
+async function encodeCanvas(
+  source: CanvasImageSource,
+  width: number,
+  height: number,
   outputType: 'image/jpeg' | 'image/webp',
-  extension: string,
   targetOutputBytes: number,
   storageMaxBytes: number
-): Promise<CompressedImage | null> {
-  let dimension = maxDimension
+): Promise<Blob> {
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
 
-  while (dimension >= minDimension) {
-    const scaled = scaleDimensions(decoded.width, decoded.height, dimension)
-    const canvas = document.createElement('canvas')
-    canvas.width = scaled.width
-    canvas.height = scaled.height
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) {
-      throw new ImageValidationError('Could not process image in this browser.')
-    }
-
-    ctx.drawImage(decoded.source, 0, 0, scaled.width, scaled.height)
-
-    let quality = 0.9
-    let blob = await canvasToBlob(canvas, outputType, quality)
-
-    while (blob.size > targetOutputBytes && quality >= 0.35) {
-      quality -= 0.07
-      blob = await canvasToBlob(canvas, outputType, quality)
-    }
-
-    if (blob.size <= storageMaxBytes) {
-      return {
-        blob,
-        width: scaled.width,
-        height: scaled.height,
-        contentType: outputType,
-        extension,
-      }
-    }
-
-    dimension = Math.round(dimension * 0.75)
+  const ctx = canvas.getContext('2d')
+  if (!ctx) {
+    throw new ImageValidationError('Could not process image in this browser.')
   }
 
-  return null
+  ctx.drawImage(source, 0, 0, width, height)
+
+  let blob = await canvasToBlob(canvas, outputType, 0.82)
+
+  if (blob.size > targetOutputBytes) {
+    blob = await canvasToBlob(canvas, outputType, 0.65)
+  }
+
+  if (blob.size > storageMaxBytes) {
+    blob = await canvasToBlob(canvas, outputType, 0.5)
+  }
+
+  return blob
 }
 
 /**
- * Compresses any-size photos client-side for fast upload.
- * Large originals are scaled and re-encoded — no size limit on input.
+ * Fast client-side compression: decode scaled via createImageBitmap, then 1–3 encode passes.
  */
 async function compressRasterImage(
   file: File,
@@ -200,28 +200,49 @@ async function compressRasterImage(
   const minDimension = options.minDimension ?? MIN_IMAGE_DIMENSION
   const targetOutputBytes = options.targetOutputBytes ?? TARGET_OUTPUT_BYTES
   const storageMaxBytes = options.storageMaxBytes ?? STORAGE_MAX_BYTES
-  const useWebp = prefersWebp()
-  const outputType = useWebp ? 'image/webp' : 'image/jpeg'
-  const extension = useWebp ? 'webp' : 'jpg'
+  const { type: outputType, extension } = getOutputFormat()
 
-  const decoded = await decodeImage(file)
+  const decoded = await decodeAtMaxDimension(file, maxDimension)
 
   try {
-    const result = await renderToBlob(
-      decoded,
-      maxDimension,
-      minDimension,
+    let width = decoded.width
+    let height = decoded.height
+    let blob = await encodeCanvas(
+      decoded.source,
+      width,
+      height,
       outputType,
-      extension,
       targetOutputBytes,
       storageMaxBytes
     )
 
-    if (result) {
-      return result
+    let dimension = maxDimension
+    while (blob.size > storageMaxBytes && dimension >= minDimension) {
+      dimension = Math.max(minDimension, Math.round(dimension * 0.75))
+      const scaled = scaleDimensions(decoded.width, decoded.height, dimension)
+      width = scaled.width
+      height = scaled.height
+      blob = await encodeCanvas(
+        decoded.source,
+        width,
+        height,
+        outputType,
+        targetOutputBytes,
+        storageMaxBytes
+      )
     }
 
-    throw new ImageValidationError('Could not compress this image enough to upload.')
+    if (blob.size > storageMaxBytes) {
+      throw new ImageValidationError('Could not compress this image enough to upload.')
+    }
+
+    return {
+      blob,
+      width,
+      height,
+      contentType: outputType,
+      extension,
+    }
   } finally {
     decoded.cleanup()
   }

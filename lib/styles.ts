@@ -117,19 +117,18 @@ export const post = {
   mediaAuthor: 'block font-semibold text-white truncate hover:text-white/90 transition-colors',
   mediaTime: 'text-xs text-white/80',
   mediaBody: 'px-4 pt-2.5 pb-3',
-  engagementActions: 'relative',
+  engagementActions: '',
   actionBar: 'flex items-center gap-4',
   actionIconBtn:
     'text-foreground hover:text-muted-foreground transition-colors active:scale-95 rounded-lg p-1 -m-1',
   actionIconBtnActive: 'text-accent bg-accent/10',
   actionIconSvg: 'h-6 w-6',
-  commentBubble: 'absolute left-0 right-0 bottom-full mb-2.5 z-20',
-  commentBubbleInner:
-    'flex items-center gap-2 rounded-2xl border border-border bg-surface-elevated/95 backdrop-blur-md shadow-xl shadow-black/40 px-3 py-2 ring-1 ring-white/[0.06]',
-  commentBubbleInput:
-    'flex-1 min-w-0 bg-transparent border-0 py-2 px-1 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-0',
-  commentBubbleSubmit:
-    'shrink-0 rounded-xl bg-accent px-3.5 py-1.5 text-sm font-semibold text-white hover:bg-accent-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
+  commentBar: 'mt-3 pt-1',
+  commentBarInner: 'flex items-center gap-2.5',
+  commentBarInput:
+    'flex-1 min-w-0 bg-transparent border-0 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-0',
+  commentBarSubmit:
+    'shrink-0 text-sm font-semibold text-accent hover:text-accent-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
   likesLine: 'mt-1.5 text-sm font-semibold text-foreground',
   caption: 'mt-1.5 text-sm leading-snug whitespace-pre-wrap break-words',
   captionAuthor: 'font-semibold text-foreground hover:text-accent transition-colors mr-1.5',

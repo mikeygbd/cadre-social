@@ -7,8 +7,8 @@ export const STORAGE_MAX_BYTES = 5 * 1024 * 1024
 /** Supabase avatars bucket upload ceiling (matches migration file_size_limit). */
 export const AVATAR_STORAGE_MAX_BYTES = 2 * 1024 * 1024
 
-/** Target max dimension — larger photos are scaled down proportionally. */
-export const MAX_IMAGE_DIMENSION = 1920
+/** Target max dimension — feed displays ~672px wide; 1280 is plenty for retina. */
+export const MAX_IMAGE_DIMENSION = 1280
 
 /** Minimum dimension when aggressively re-scaling stubborn files. */
 export const MIN_IMAGE_DIMENSION = 640

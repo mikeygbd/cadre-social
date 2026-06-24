@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import type { Post, Profile, PostLike, CommentWithProfile } from '@/lib/types'
 import Avatar from '@/components/Avatar'
 import CommentBubble from '@/components/posts/CommentBubble'
@@ -13,6 +13,7 @@ import { card, post as postStyles, typography } from '@/lib/styles'
 type Props = {
   post: Post
   profile: Profile
+  currentUserProfile: Profile
   likes: PostLike[]
   comments: CommentWithProfile[]
   currentUserId: string
@@ -33,6 +34,7 @@ function formatRelativeTime(dateStr: string): string {
 type EngagementProps = {
   post: Post
   profile: Profile
+  currentUserProfile: Profile
   likeCount: number
   isLiked: boolean
   postComments: CommentWithProfile[]
@@ -43,47 +45,31 @@ type EngagementProps = {
 function PostEngagement({
   post,
   profile,
+  currentUserProfile,
   likeCount,
   isLiked,
   postComments,
   isPending,
   inlineCaption,
 }: EngagementProps): JSX.Element {
-  const [commentOpen, setCommentOpen] = useState(false)
-  const actionsRef = useRef<HTMLDivElement>(null)
+  const [commentFocused, setCommentFocused] = useState(false)
+  const commentInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    if (!commentOpen) return
-
-    function handlePointerDown(event: MouseEvent): void {
-      if (actionsRef.current?.contains(event.target as Node)) return
-      setCommentOpen(false)
-    }
-
-    document.addEventListener('mousedown', handlePointerDown)
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown)
-    }
-  }, [commentOpen])
-
-  function toggleCommentBubble(): void {
-    setCommentOpen((open) => !open)
+  function focusCommentInput(): void {
+    commentInputRef.current?.focus()
   }
 
   return (
     <>
       {!isPending && (
-        <div ref={actionsRef} className={postStyles.engagementActions}>
+        <div className={postStyles.engagementActions}>
           <PostActionBar
             postId={post.id}
             likeCount={likeCount}
             initialLiked={isLiked}
-            commentActive={commentOpen}
-            onCommentClick={toggleCommentBubble}
+            commentActive={commentFocused}
+            onCommentClick={focusCommentInput}
           />
-          {commentOpen && (
-            <CommentBubble postId={post.id} onClose={() => setCommentOpen(false)} />
-          )}
         </div>
       )}
       {!isPending && (
@@ -107,6 +93,15 @@ function PostEngagement({
           <CommentList comments={postComments} />
         </div>
       )}
+      {!isPending && (
+        <CommentBubble
+          postId={post.id}
+          avatarUrl={currentUserProfile.avatar_url}
+          displayName={currentUserProfile.display_name}
+          inputRef={commentInputRef}
+          onFocusChange={setCommentFocused}
+        />
+      )}
     </>
   )
 }
@@ -114,6 +109,7 @@ function PostEngagement({
 export default function PostCard({
   post,
   profile,
+  currentUserProfile,
   likes,
   comments,
   currentUserId,
@@ -138,6 +134,7 @@ export default function PostCard({
           <PostEngagement
             post={post}
             profile={profile}
+            currentUserProfile={currentUserProfile}
             likeCount={likeCount}
             isLiked={isLiked}
             postComments={postComments}
@@ -165,6 +162,7 @@ export default function PostCard({
       <PostEngagement
         post={post}
         profile={profile}
+        currentUserProfile={currentUserProfile}
         likeCount={likeCount}
         isLiked={isLiked}
         postComments={postComments}

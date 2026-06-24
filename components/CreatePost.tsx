@@ -29,11 +29,13 @@ export default function CreatePost({
   const [compressedImage, setCompressedImage] = useState<CompressedImage | null>(null)
   const [isProcessingImage, setIsProcessingImage] = useState(false)
   const previewUrlRef = useRef<string | null>(null)
+  const selectedFileRef = useRef<File | null>(null)
+  const compressGenerationRef = useRef(0)
 
   const remaining = MAX_CHARS - content.length
   const isOverLimit = remaining < 0
-  const hasImage = compressedImage !== null
-  const canSubmit = (content.trim().length > 0 || hasImage) && !isOverLimit && !isProcessingImage
+  const hasPreview = previewUrl !== null
+  const canSubmit = (content.trim().length > 0 || hasPreview) && !isOverLimit && !loading
 
   useEffect(() => {
     return () => {
@@ -44,34 +46,50 @@ export default function CreatePost({
   }, [])
 
   function clearImage(): void {
+    compressGenerationRef.current += 1
+    selectedFileRef.current = null
     if (previewUrlRef.current) {
       URL.revokeObjectURL(previewUrlRef.current)
       previewUrlRef.current = null
     }
     setPreviewUrl(null)
     setCompressedImage(null)
+    setIsProcessingImage(false)
   }
 
   async function handleFileSelected(file: File): Promise<void> {
     setError(null)
+    compressGenerationRef.current += 1
+    const generation = compressGenerationRef.current
+    selectedFileRef.current = file
+
+    const instantPreview = URL.createObjectURL(file)
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current)
+    }
+    previewUrlRef.current = instantPreview
+    setPreviewUrl(instantPreview)
+    setCompressedImage(null)
     setIsProcessingImage(true)
 
     try {
       const compressed = await compressImage(file)
-      const localPreview = URL.createObjectURL(compressed.blob)
-
-      if (previewUrlRef.current) {
-        URL.revokeObjectURL(previewUrlRef.current)
+      if (generation !== compressGenerationRef.current) {
+        return
       }
-      previewUrlRef.current = localPreview
-      setPreviewUrl(localPreview)
       setCompressedImage(compressed)
     } catch (err) {
+      if (generation !== compressGenerationRef.current) {
+        return
+      }
       const message =
         err instanceof ImageValidationError ? err.message : 'Could not process that image.'
       setError(message)
+      clearImage()
     } finally {
-      setIsProcessingImage(false)
+      if (generation === compressGenerationRef.current) {
+        setIsProcessingImage(false)
+      }
     }
   }
 
@@ -94,7 +112,22 @@ export default function CreatePost({
     const trimmedContent = content.trim()
     const tempId = crypto.randomUUID()
     const optimisticPreviewUrl = previewUrlRef.current ?? undefined
-    const imageToUpload = compressedImage
+    let imageToUpload = compressedImage
+
+    if (!imageToUpload && selectedFileRef.current) {
+      setIsProcessingImage(true)
+      try {
+        imageToUpload = await compressImage(selectedFileRef.current)
+        setCompressedImage(imageToUpload)
+      } catch (err) {
+        const message =
+          err instanceof ImageValidationError ? err.message : 'Could not process that image.'
+        setError(message)
+        setIsProcessingImage(false)
+        return
+      }
+      setIsProcessingImage(false)
+    }
 
     const optimisticPost: PendingPost = {
       id: tempId,
@@ -173,8 +206,11 @@ export default function CreatePost({
           </span>
           <div className="flex items-center gap-1">
             {error && <p className={`${form.errorInline} mr-2`}>{error}</p>}
-            {loading && hasImage && (
+            {loading && hasPreview && (
               <span className={`${postStyles.pendingBadge} mr-1`}>Uploading…</span>
+            )}
+            {isProcessingImage && hasPreview && (
+              <span className={`${postStyles.pendingBadge} mr-1`}>Preparing…</span>
             )}
             <button type="submit" disabled={loading || !canSubmit} className={button.primarySm}>
               {loading ? 'Posting…' : 'Post'}
