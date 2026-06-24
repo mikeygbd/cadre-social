@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { compressImage, ImageValidationError, type CompressedImage } from '@/lib/storage/compress-image'
 import { uploadPostImage } from '@/lib/storage/upload-post-image'
-import type { PendingPost } from '@/lib/types'
+import type { PendingPost, Post } from '@/lib/types'
 import PostImagePicker from '@/components/posts/PostImagePicker'
 import PostImagePreview from '@/components/posts/PostImagePreview'
 import { button, card, form, post as postStyles } from '@/lib/styles'
@@ -13,7 +13,7 @@ const MAX_CHARS = 280
 
 type Props = {
   onOptimisticPost: (post: PendingPost) => void
-  onPostSuccess: (tempId: string) => void
+  onPostSuccess: (tempId: string, newPost: Post) => void
   onPostFailed: (tempId: string, error: string) => void
 }
 
@@ -44,6 +44,16 @@ export default function CreatePost({
       }
     }
   }, [])
+
+  function detachPreviewForHandoff(): string | undefined {
+    const url = previewUrlRef.current ?? undefined
+    previewUrlRef.current = null
+    setPreviewUrl(null)
+    setCompressedImage(null)
+    selectedFileRef.current = null
+    setIsProcessingImage(false)
+    return url
+  }
 
   function clearImage(): void {
     compressGenerationRef.current += 1
@@ -111,7 +121,6 @@ export default function CreatePost({
 
     const trimmedContent = content.trim()
     const tempId = crypto.randomUUID()
-    const optimisticPreviewUrl = previewUrlRef.current ?? undefined
     let imageToUpload = compressedImage
 
     if (!imageToUpload && selectedFileRef.current) {
@@ -129,6 +138,12 @@ export default function CreatePost({
       setIsProcessingImage(false)
     }
 
+    const optimisticPreviewUrl = imageToUpload
+      ? detachPreviewForHandoff()
+      : previewUrlRef.current
+        ? detachPreviewForHandoff()
+        : undefined
+
     const optimisticPost: PendingPost = {
       id: tempId,
       tempId,
@@ -142,7 +157,6 @@ export default function CreatePost({
 
     onOptimisticPost(optimisticPost)
     setContent('')
-    clearImage()
     setLoading(true)
 
     try {
@@ -152,17 +166,21 @@ export default function CreatePost({
         imageUrl = await uploadPostImage(supabase, user.id, imageToUpload)
       }
 
-      const { error: insertError } = await supabase.from('posts').insert({
-        user_id: user.id,
-        content: trimmedContent,
-        image_url: imageUrl,
-      })
+      const { data: newPost, error: insertError } = await supabase
+        .from('posts')
+        .insert({
+          user_id: user.id,
+          content: trimmedContent,
+          image_url: imageUrl,
+        })
+        .select()
+        .single()
 
-      if (insertError) {
-        throw new Error(insertError.message)
+      if (insertError || !newPost) {
+        throw new Error(insertError?.message ?? 'Failed to create post.')
       }
 
-      onPostSuccess(tempId)
+      onPostSuccess(tempId, newPost as Post)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create post.'
       onPostFailed(tempId, message)

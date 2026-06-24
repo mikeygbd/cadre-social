@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Post, Profile, PostLike, CommentWithProfile } from '@/lib/types'
 import Avatar from '@/components/Avatar'
 import CommentBubble from '@/components/posts/CommentBubble'
@@ -53,10 +53,19 @@ function PostEngagement({
   inlineCaption,
 }: EngagementProps): JSX.Element {
   const [commentFocused, setCommentFocused] = useState(false)
+  const [displayLikeCount, setDisplayLikeCount] = useState(likeCount)
   const commentInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setDisplayLikeCount(likeCount)
+  }, [likeCount])
 
   function focusCommentInput(): void {
     commentInputRef.current?.focus()
+  }
+
+  function handleLikeChange(_liked: boolean, count: number): void {
+    setDisplayLikeCount(count)
   }
 
   return (
@@ -69,12 +78,13 @@ function PostEngagement({
             initialLiked={isLiked}
             commentActive={commentFocused}
             onCommentClick={focusCommentInput}
+            onLikeChange={handleLikeChange}
           />
         </div>
       )}
       {!isPending && (
         <p className={postStyles.likesLine}>
-          {likeCount} {likeCount === 1 ? 'like' : 'likes'}
+          {displayLikeCount} {displayLikeCount === 1 ? 'like' : 'likes'}
         </p>
       )}
       {post.content &&

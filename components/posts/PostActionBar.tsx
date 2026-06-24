@@ -9,6 +9,7 @@ type Props = {
   initialLiked: boolean
   commentActive: boolean
   onCommentClick: () => void
+  onLikeChange?: (liked: boolean, count: number) => void
 }
 
 function CommentIcon(): JSX.Element {
@@ -35,6 +36,7 @@ export default function PostActionBar({
   initialLiked,
   commentActive,
   onCommentClick,
+  onLikeChange,
 }: Props): JSX.Element {
   return (
     <div className={post.actionBar}>
@@ -43,6 +45,7 @@ export default function PostActionBar({
         initialCount={likeCount}
         initialLiked={initialLiked}
         showCount={false}
+        onLikeChange={onLikeChange}
       />
       <button
         type="button"

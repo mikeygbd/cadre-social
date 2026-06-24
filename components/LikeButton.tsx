@@ -9,6 +9,7 @@ type Props = {
   initialCount: number
   initialLiked: boolean
   showCount?: boolean
+  onLikeChange?: (liked: boolean, count: number) => void
 }
 
 export default function LikeButton({
@@ -16,6 +17,7 @@ export default function LikeButton({
   initialCount,
   initialLiked,
   showCount = true,
+  onLikeChange,
 }: Props): JSX.Element {
   const [liked, setLiked] = useState(initialLiked)
   const [likeCount, setLikeCount] = useState(initialCount)
@@ -41,9 +43,12 @@ export default function LikeButton({
 
     const wasLiked = liked
     const nextLiked = !wasLiked
+    const previousCount = likeCount
+    const nextCount = nextLiked ? previousCount + 1 : previousCount - 1
 
     setLiked(nextLiked)
-    setLikeCount((c) => (nextLiked ? c + 1 : c - 1))
+    setLikeCount(nextCount)
+    onLikeChange?.(nextLiked, nextCount)
 
     if (nextLiked) {
       const { error } = await supabase
@@ -51,7 +56,8 @@ export default function LikeButton({
         .insert({ post_id: postId, user_id: user.id })
       if (error) {
         setLiked(wasLiked)
-        setLikeCount((c) => (wasLiked ? c + 1 : c - 1))
+        setLikeCount(previousCount)
+        onLikeChange?.(wasLiked, previousCount)
       }
     } else {
       const { error } = await supabase
@@ -61,7 +67,8 @@ export default function LikeButton({
         .eq('user_id', user.id)
       if (error) {
         setLiked(wasLiked)
-        setLikeCount((c) => (wasLiked ? c + 1 : c - 1))
+        setLikeCount(previousCount)
+        onLikeChange?.(wasLiked, previousCount)
       }
     }
 

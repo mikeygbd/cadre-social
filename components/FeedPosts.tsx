@@ -15,6 +15,12 @@ type Props = {
   currentUserId: string
 }
 
+function revokeBlobUrl(url: string | undefined): void {
+  if (url?.startsWith('blob:')) {
+    URL.revokeObjectURL(url)
+  }
+}
+
 export default function FeedPosts({
   initialPosts,
   profiles,
@@ -34,20 +40,31 @@ export default function FeedPosts({
   }, [])
 
   const handlePostSuccess = useCallback(
-    (tempId: string): void => {
-      setPendingPosts((prev) => prev.filter((p) => p.tempId !== tempId))
+    (tempId: string, newPost: Post): void => {
+      setPendingPosts((prev) => {
+        const match = prev.find((p) => p.tempId === tempId)
+        revokeBlobUrl(match?.previewImageUrl)
+        return prev.map((p) =>
+          p.tempId === tempId ? { ...newPost, tempId, isPending: false } : p
+        )
+      })
       router.refresh()
     },
     [router]
   )
 
   const handlePostFailed = useCallback((tempId: string, error: string): void => {
-    setPendingPosts((prev) => prev.filter((p) => p.tempId !== tempId))
+    setPendingPosts((prev) => {
+      const match = prev.find((p) => p.tempId === tempId)
+      revokeBlobUrl(match?.previewImageUrl)
+      return prev.filter((p) => p.tempId !== tempId)
+    })
     setPostError(error)
   }, [])
 
-  const serverPostIds = new Set(initialPosts.map((p) => p.id))
-  const visiblePending = pendingPosts.filter((p) => !serverPostIds.has(p.id))
+  const visiblePending = pendingPosts.filter(
+    (p) => !initialPosts.some((serverPost) => serverPost.id === p.id)
+  )
 
   const allPosts: Array<Post | PendingPost> = [...visiblePending, ...initialPosts]
 

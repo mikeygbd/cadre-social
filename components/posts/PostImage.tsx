@@ -3,14 +3,12 @@ import { cn, post } from '@/lib/styles'
 type Props = {
   src: string
   alt: string
-  isPending?: boolean
   bleedTop?: boolean
 }
 
 export default function PostImage({
   src,
   alt,
-  isPending = false,
   bleedTop = false,
 }: Props): JSX.Element {
   return (
@@ -18,8 +16,8 @@ export default function PostImage({
       <img
         src={src}
         alt={alt}
-        className={cn(post.image, isPending && post.imagePending)}
-        loading="lazy"
+        className={post.image}
+        loading="eager"
         decoding="async"
       />
     </div>
