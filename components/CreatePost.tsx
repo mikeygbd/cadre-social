@@ -6,6 +6,7 @@ import { compressImage, ImageValidationError, type CompressedImage } from '@/lib
 import { uploadPostImage } from '@/lib/storage/upload-post-image'
 import type { PendingPost } from '@/lib/types'
 import PostImagePicker from '@/components/posts/PostImagePicker'
+import PostImagePreview from '@/components/posts/PostImagePreview'
 import { button, card, form, post as postStyles } from '@/lib/styles'
 
 const MAX_CHARS = 280
@@ -147,13 +148,9 @@ export default function CreatePost({
         rows={3}
         className={form.textareaSm}
       />
-      <PostImagePicker
-        previewUrl={previewUrl}
-        disabled={loading}
-        isProcessing={isProcessingImage}
-        onFileSelected={handleFileSelected}
-        onRemove={clearImage}
-      />
+      {previewUrl && (
+        <PostImagePreview previewUrl={previewUrl} disabled={loading} onRemove={clearImage} />
+      )}
       <div className="flex items-center justify-between mt-3">
         <span
           className={
@@ -162,9 +159,16 @@ export default function CreatePost({
         >
           {remaining}
         </span>
-        <div className="flex items-center gap-3">
-          {error && <p className={form.errorInline}>{error}</p>}
-          {loading && hasImage && <span className={postStyles.pendingBadge}>Uploading…</span>}
+        <div className="flex items-center gap-1">
+          {error && <p className={`${form.errorInline} mr-2`}>{error}</p>}
+          {loading && hasImage && (
+            <span className={`${postStyles.pendingBadge} mr-1`}>Uploading…</span>
+          )}
+          <PostImagePicker
+            disabled={loading}
+            isProcessing={isProcessingImage}
+            onFileSelected={handleFileSelected}
+          />
           <button type="submit" disabled={loading || !canSubmit} className={button.primarySm}>
             {loading ? 'Posting…' : 'Post'}
           </button>

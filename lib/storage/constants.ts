@@ -1,14 +1,17 @@
 export const POST_IMAGES_BUCKET = 'post-images'
 export const AVATARS_BUCKET = 'avatars'
 
-/** Max upload size before client-side compression (5 MB). */
-export const MAX_INPUT_BYTES = 5 * 1024 * 1024
+/** Supabase bucket upload ceiling — output is compressed well below this. */
+export const STORAGE_MAX_BYTES = 5 * 1024 * 1024
 
 /** Target max dimension — larger photos are scaled down proportionally. */
 export const MAX_IMAGE_DIMENSION = 1920
 
-/** Target output size after compression (~800 KB). */
-export const TARGET_OUTPUT_BYTES = 800 * 1024
+/** Minimum dimension when aggressively re-scaling stubborn files. */
+export const MIN_IMAGE_DIMENSION = 640
+
+/** Target output size after compression (~600 KB). */
+export const TARGET_OUTPUT_BYTES = 600 * 1024
 
 /** Avatar max dimension (512px covers 2× retina at lg size). */
 export const AVATAR_MAX_DIMENSION = 512
@@ -29,3 +32,6 @@ export const ACCEPTED_IMAGE_TYPES = [
 export type AcceptedImageType = (typeof ACCEPTED_IMAGE_TYPES)[number]
 
 export const ACCEPTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'] as const
+
+/** Small animated GIFs may pass through without re-encoding. */
+export const GIF_PASSTHROUGH_MAX_BYTES = 500 * 1024
