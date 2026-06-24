@@ -14,6 +14,14 @@ export type Post = {
   created_at: string
 }
 
+/** Client-side placeholder shown before the server confirms a new post. */
+export type PendingPost = Post & {
+  tempId: string
+  isPending: boolean
+  /** Blob URL used for instant preview while upload finishes. */
+  previewImageUrl?: string
+}
+
 export type PostLike = {
   post_id: string
   user_id: string

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { Post, Profile, PostLike, CommentWithProfile } from '@/lib/types'
 import LikeButton from '@/components/LikeButton'
 import CommentSection from '@/components/CommentSection'
+import PostImage from '@/components/posts/PostImage'
 import { avatar, card, post as postStyles, typography } from '@/lib/styles'
 
 type Props = {
@@ -10,6 +11,7 @@ type Props = {
   likes: PostLike[]
   comments: CommentWithProfile[]
   currentUserId: string
+  isPending?: boolean
 }
 
 function formatRelativeTime(dateStr: string): string {
@@ -23,7 +25,14 @@ function formatRelativeTime(dateStr: string): string {
   return `${days}d ago`
 }
 
-export default function PostCard({ post, profile, likes, comments, currentUserId }: Props): JSX.Element {
+export default function PostCard({
+  post,
+  profile,
+  likes,
+  comments,
+  currentUserId,
+  isPending = false,
+}: Props): JSX.Element {
   const likeCount = likes.filter((l) => l.post_id === post.id).length
   const isLiked = likes.some((l) => l.post_id === post.id && l.user_id === currentUserId)
   const postComments = comments.filter((c) => c.post_id === post.id)
@@ -51,10 +60,21 @@ export default function PostCard({ post, profile, likes, comments, currentUserId
         </div>
       </div>
       <p className={typography.postBody}>{post.content}</p>
+      {post.image_url && (
+        <PostImage
+          src={post.image_url}
+          alt={`Photo by ${profile.display_name ?? 'user'}`}
+          isPending={isPending}
+        />
+      )}
       <div className={postStyles.actions}>
-        <LikeButton postId={post.id} initialCount={likeCount} initialLiked={isLiked} />
+        {!isPending && (
+          <LikeButton postId={post.id} initialCount={likeCount} initialLiked={isLiked} />
+        )}
       </div>
-      <CommentSection postId={post.id} initialComments={postComments} />
+      {!isPending && (
+        <CommentSection postId={post.id} initialComments={postComments} />
+      )}
     </article>
   )
 }

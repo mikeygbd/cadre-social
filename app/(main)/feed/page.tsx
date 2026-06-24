@@ -1,9 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import PostCard from '@/components/PostCard'
-import CreatePost from '@/components/CreatePost'
+import FeedPosts from '@/components/FeedPosts'
 import type { Post, Profile, PostLike, PostComment, CommentWithProfile } from '@/lib/types'
-import { empty, layout } from '@/lib/styles'
 
 export default async function FeedPage(): Promise<JSX.Element> {
   const supabase = await createClient()
@@ -80,29 +78,28 @@ export default async function FeedPage(): Promise<JSX.Element> {
     return { ...c, display_name: cp?.display_name ?? null, avatar_url: cp?.avatar_url ?? null }
   })
 
+  const currentUserProfile = profileMap.get(user.id)
+  if (!currentUserProfile) {
+    const { data: selfProfile, error: selfProfileError } = await supabase
+      .from('profiles')
+      .select('id, display_name, avatar_url, bio, created_at')
+      .eq('id', user.id)
+      .single()
+    if (selfProfileError || !selfProfile) throw new Error(selfProfileError?.message ?? 'Profile not found.')
+    profileMap.set(user.id, selfProfile)
+  }
+
+  const resolvedCurrentUserProfile = profileMap.get(user.id)!
+  const allProfiles = [...profileMap.values()]
+
   return (
-    <div>
-      <CreatePost />
-      {typedPosts.length === 0 ? (
-        <p className={empty.message}>No posts yet. Be the first!</p>
-      ) : (
-        <div className={layout.stack}>
-          {typedPosts.map((post) => {
-            const profile = profileMap.get(post.user_id)
-            if (!profile) return null
-            return (
-              <PostCard
-                key={post.id}
-                post={post}
-                profile={profile}
-                likes={likesData}
-                comments={enrichedComments}
-                currentUserId={user.id}
-              />
-            )
-          })}
-        </div>
-      )}
-    </div>
+    <FeedPosts
+      initialPosts={typedPosts}
+      profiles={allProfiles}
+      likes={likesData}
+      comments={enrichedComments}
+      currentUserId={user.id}
+      currentUserProfile={resolvedCurrentUserProfile}
+    />
   )
 }

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import type { Profile, Post } from '@/lib/types'
 import FollowButton from '@/components/FollowButton'
+import PostImage from '@/components/posts/PostImage'
 import {
   avatar,
   button,
@@ -120,7 +121,13 @@ export default async function ProfilePage({
         <div className={layout.stack}>
           {posts.map((post) => (
             <article key={post.id} className={card.post}>
-              <p className={typography.postBody}>{post.content}</p>
+              {post.content && <p className={typography.postBody}>{post.content}</p>}
+              {post.image_url && (
+                <PostImage
+                  src={post.image_url}
+                  alt={`Photo by ${profileRecord.display_name ?? 'user'}`}
+                />
+              )}
               <p className={`${typography.meta} mt-3`}>
                 {new Date(post.created_at).toLocaleDateString('en-US', {
                   month: 'short',

@@ -16,8 +16,8 @@ export const layout = {
   container: 'max-w-2xl mx-auto px-4',
   main: 'max-w-2xl mx-auto px-4 py-6',
   stack: 'space-y-4',
-  nav: 'bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-10',
-  navInner: 'max-w-2xl mx-auto px-4 h-14 flex items-center justify-between',
+  nav: 'bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-10 w-full',
+  navInner: 'w-full px-6 sm:px-8 h-14 flex items-center justify-between',
   navBrand: 'text-lg font-semibold text-foreground tracking-tight hover:text-accent transition-colors',
   navLinks: 'flex items-center gap-5',
   navLink: 'text-sm font-medium text-muted hover:text-accent transition-colors',
@@ -111,6 +111,18 @@ export const post = {
   commentText: 'text-sm text-muted',
   commentAuthor: 'font-semibold text-foreground mr-1',
   commentForm: 'flex gap-2 items-center',
+  imageWrap: 'mt-3 overflow-hidden rounded-xl border border-border-subtle bg-surface-elevated',
+  image:
+    'w-full max-h-[32rem] object-contain bg-black/20',
+  imagePending: 'opacity-90',
+  imagePicker: 'flex items-center gap-3 mt-3',
+  imagePreviewWrap: 'relative inline-block',
+  imagePreview: 'h-20 w-20 rounded-lg object-cover border border-border',
+  imageRemove:
+    'absolute -top-2 -right-2 w-5 h-5 rounded-full bg-surface-elevated border border-border text-xs text-muted hover:text-destructive transition-colors',
+  imagePickerButton:
+    'inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted border border-border rounded-xl hover:border-accent/50 hover:text-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+  pendingBadge: 'text-xs text-muted-foreground italic',
 }
 
 export const like = {
