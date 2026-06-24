@@ -12,8 +12,13 @@ export default function LogoutButton(): JSX.Element {
   async function handleLogout(): Promise<void> {
     setLoading(true)
     const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/login')
+    const { error } = await supabase.auth.signOut({ scope: 'global' })
+    if (error) {
+      setLoading(false)
+      return
+    }
+    router.refresh()
+    window.location.assign('/login')
   }
 
   return (

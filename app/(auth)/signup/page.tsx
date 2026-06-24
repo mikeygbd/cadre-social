@@ -48,6 +48,7 @@ export default function SignupPage(): JSX.Element {
       }
     }
 
+    router.refresh()
     router.push('/feed')
   }
 

@@ -39,6 +39,7 @@ export default function LoginPage(): JSX.Element {
         .is('display_name', null)
     }
 
+    router.refresh()
     router.push('/feed')
   }
 

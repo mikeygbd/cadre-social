@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import LogoutButton from '@/components/LogoutButton'
 import { layout } from '@/lib/styles'
 
+export const dynamic = 'force-dynamic'
+
 export default async function MainLayout({
   children,
 }: {
