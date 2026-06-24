@@ -1,6 +1,8 @@
 import {
   ACCEPTED_IMAGE_TYPES,
   AVATAR_MAX_DIMENSION,
+  AVATAR_MIN_DIMENSION,
+  AVATAR_STORAGE_MAX_BYTES,
   AVATAR_TARGET_OUTPUT_BYTES,
   GIF_PASSTHROUGH_MAX_BYTES,
   MAX_IMAGE_DIMENSION,
@@ -12,7 +14,9 @@ import {
 
 export type CompressOptions = {
   maxDimension?: number
+  minDimension?: number
   targetOutputBytes?: number
+  storageMaxBytes?: number
 }
 
 export type CompressedImage = {
@@ -139,6 +143,7 @@ function prefersWebp(): boolean {
 async function renderToBlob(
   decoded: DecodedImage,
   maxDimension: number,
+  minDimension: number,
   outputType: 'image/jpeg' | 'image/webp',
   extension: string,
   targetOutputBytes: number,
@@ -146,7 +151,7 @@ async function renderToBlob(
 ): Promise<CompressedImage | null> {
   let dimension = maxDimension
 
-  while (dimension >= MIN_IMAGE_DIMENSION) {
+  while (dimension >= minDimension) {
     const scaled = scaleDimensions(decoded.width, decoded.height, dimension)
     const canvas = document.createElement('canvas')
     canvas.width = scaled.width
@@ -192,7 +197,9 @@ async function compressRasterImage(
   options: CompressOptions = {}
 ): Promise<CompressedImage> {
   const maxDimension = options.maxDimension ?? MAX_IMAGE_DIMENSION
+  const minDimension = options.minDimension ?? MIN_IMAGE_DIMENSION
   const targetOutputBytes = options.targetOutputBytes ?? TARGET_OUTPUT_BYTES
+  const storageMaxBytes = options.storageMaxBytes ?? STORAGE_MAX_BYTES
   const useWebp = prefersWebp()
   const outputType = useWebp ? 'image/webp' : 'image/jpeg'
   const extension = useWebp ? 'webp' : 'jpg'
@@ -203,10 +210,11 @@ async function compressRasterImage(
     const result = await renderToBlob(
       decoded,
       maxDimension,
+      minDimension,
       outputType,
       extension,
       targetOutputBytes,
-      STORAGE_MAX_BYTES
+      storageMaxBytes
     )
 
     if (result) {
@@ -242,6 +250,8 @@ export async function compressImage(
 export async function compressAvatar(file: File): Promise<CompressedImage> {
   return compressImage(file, {
     maxDimension: AVATAR_MAX_DIMENSION,
+    minDimension: AVATAR_MIN_DIMENSION,
     targetOutputBytes: AVATAR_TARGET_OUTPUT_BYTES,
+    storageMaxBytes: AVATAR_STORAGE_MAX_BYTES,
   })
 }

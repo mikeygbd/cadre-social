@@ -1,8 +1,11 @@
 export const POST_IMAGES_BUCKET = 'post-images'
 export const AVATARS_BUCKET = 'avatars'
 
-/** Supabase bucket upload ceiling — output is compressed well below this. */
+/** Supabase post-images bucket upload ceiling. */
 export const STORAGE_MAX_BYTES = 5 * 1024 * 1024
+
+/** Supabase avatars bucket upload ceiling (matches migration file_size_limit). */
+export const AVATAR_STORAGE_MAX_BYTES = 2 * 1024 * 1024
 
 /** Target max dimension — larger photos are scaled down proportionally. */
 export const MAX_IMAGE_DIMENSION = 1920
@@ -15,6 +18,9 @@ export const TARGET_OUTPUT_BYTES = 600 * 1024
 
 /** Avatar max dimension (512px covers 2× retina at lg size). */
 export const AVATAR_MAX_DIMENSION = 512
+
+/** Floor when re-scaling stubborn avatar files (display size is 64px). */
+export const AVATAR_MIN_DIMENSION = 64
 
 /** Target avatar output size (~150 KB). */
 export const AVATAR_TARGET_OUTPUT_BYTES = 150 * 1024
