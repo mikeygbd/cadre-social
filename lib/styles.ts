@@ -21,6 +21,7 @@ export const layout = {
   navBrand: 'text-lg font-semibold text-foreground tracking-tight hover:text-accent transition-colors',
   navLinks: 'flex items-center gap-5',
   navLink: 'text-sm font-medium text-muted hover:text-accent transition-colors',
+  fullBleed: 'w-screen relative left-1/2 -translate-x-1/2',
 }
 
 export const card = {
@@ -150,6 +151,20 @@ export const profile = {
   avatarPickerActions: 'flex flex-col items-start gap-2',
   avatarPickerStatus: 'text-xs text-muted-foreground italic',
   editStatus: 'text-xs text-muted-foreground italic',
+}
+
+export const following = {
+  bar: 'w-full border-b border-border bg-surface/60 backdrop-blur-sm',
+  inner: 'flex items-center gap-5 px-6 sm:px-8 py-4 min-h-[5.5rem]',
+  title:
+    'text-xs font-semibold uppercase tracking-wider text-muted-foreground shrink-0 w-20 sm:w-24',
+  empty: 'text-sm text-muted-foreground truncate',
+  list: 'flex items-center gap-3 overflow-x-auto flex-1 pb-1 scrollbar-thin',
+  listItem: 'shrink-0',
+  item: 'flex flex-col items-center gap-2 w-[4.5rem] group',
+  avatar:
+    'ring-2 ring-border shadow-lg shadow-black/30 transition-transform duration-200 group-hover:scale-105 group-hover:ring-accent/40',
+  name: 'text-xs text-muted text-center truncate w-full group-hover:text-accent transition-colors',
 }
 
 export const empty = {

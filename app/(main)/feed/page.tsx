@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import FeedPosts from '@/components/FeedPosts'
+import FollowingBar from '@/components/FollowingBar'
 import type { Post, Profile, PostLike, PostComment, CommentWithProfile } from '@/lib/types'
+import { layout } from '@/lib/styles'
 
 export default async function FeedPage(): Promise<JSX.Element> {
   const supabase = await createClient()
@@ -11,6 +13,32 @@ export default async function FeedPage(): Promise<JSX.Element> {
   } = await supabase.auth.getUser()
 
   if (!user) redirect('/login')
+
+  const { data: followsData, error: followsError } = await supabase
+    .from('follows')
+    .select('following_id, created_at')
+    .eq('follower_id', user.id)
+    .order('created_at', { ascending: false })
+
+  if (followsError) throw new Error(followsError.message)
+
+  const followingIds = (followsData ?? []).map((row) => row.following_id)
+  const followingProfiles: Profile[] = []
+
+  if (followingIds.length > 0) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, display_name, avatar_url, bio, created_at')
+      .in('id', followingIds)
+
+    if (error) throw new Error(error.message)
+
+    const profileById = new Map((data ?? []).map((profile) => [profile.id, profile]))
+    for (const id of followingIds) {
+      const profile = profileById.get(id)
+      if (profile) followingProfiles.push(profile)
+    }
+  }
 
   // Query 1: posts
   const { data: posts, error: postsError } = await supabase
@@ -92,12 +120,17 @@ export default async function FeedPage(): Promise<JSX.Element> {
   const allProfiles = [...profileMap.values()]
 
   return (
-    <FeedPosts
-      initialPosts={typedPosts}
-      profiles={allProfiles}
-      likes={likesData}
-      comments={enrichedComments}
-      currentUserId={user.id}
-    />
+    <>
+      <div className={`${layout.fullBleed} -mt-6 mb-6`}>
+        <FollowingBar profiles={followingProfiles} />
+      </div>
+      <FeedPosts
+        initialPosts={typedPosts}
+        profiles={allProfiles}
+        likes={likesData}
+        comments={enrichedComments}
+        currentUserId={user.id}
+      />
+    </>
   )
 }
