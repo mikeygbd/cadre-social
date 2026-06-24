@@ -2,9 +2,9 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import Avatar from '@/components/Avatar'
-import type { Profile, Post } from '@/lib/types'
+import PostCard from '@/components/PostCard'
+import type { CommentWithProfile, Post, PostComment, PostLike, Profile } from '@/lib/types'
 import FollowButton from '@/components/FollowButton'
-import PostImage from '@/components/posts/PostImage'
 import {
   card,
   empty,
@@ -45,7 +45,65 @@ export default async function ProfilePage({
   if (postsError) throw new Error(postsError.message)
 
   const posts: Post[] = postsData ?? []
+  const postIds = posts.map((p) => p.id)
   const isOwnProfile = user.id === params.userId
+
+  const likesData: PostLike[] = []
+  if (postIds.length > 0) {
+    const { data, error } = await supabase
+      .from('post_likes')
+      .select('post_id, user_id, created_at')
+      .in('post_id', postIds)
+    if (error) throw new Error(error.message)
+    likesData.push(...(data ?? []))
+  }
+
+  const commentsData: PostComment[] = []
+  if (postIds.length > 0) {
+    const { data, error } = await supabase
+      .from('post_comments')
+      .select('*')
+      .in('post_id', postIds)
+      .order('created_at', { ascending: true })
+    if (error) throw new Error(error.message)
+    commentsData.push(...(data ?? []))
+  }
+
+  const commentAuthorIds = [...new Set(commentsData.map((c) => c.user_id))]
+  const profilesForComments: Profile[] = []
+  if (commentAuthorIds.length > 0) {
+    const missingIds = commentAuthorIds.filter((id) => id !== profileRecord.id && id !== user.id)
+    if (missingIds.length > 0) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url, bio, created_at')
+        .in('id', missingIds)
+      if (error) throw new Error(error.message)
+      profilesForComments.push(...(data ?? []))
+    }
+  }
+
+  const profileMap = new Map<string, Profile>([
+    [profileRecord.id, profileRecord],
+    ...profilesForComments.map((p) => [p.id, p] as const),
+  ])
+
+  let currentUserProfile = profileMap.get(user.id)
+  if (!currentUserProfile) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, display_name, avatar_url, bio, created_at')
+      .eq('id', user.id)
+      .single()
+    if (error || !data) throw new Error(error?.message ?? 'Profile not found.')
+    currentUserProfile = data
+    profileMap.set(user.id, data)
+  }
+
+  const enrichedComments: CommentWithProfile[] = commentsData.map((c) => {
+    const cp = profileMap.get(c.user_id)
+    return { ...c, display_name: cp?.display_name ?? null, avatar_url: cp?.avatar_url ?? null }
+  })
 
   const { count: followerCount } = await supabase
     .from('follows')
@@ -131,27 +189,15 @@ export default async function ProfilePage({
       ) : (
         <div className={layout.stack}>
           {posts.map((post) => (
-            <article key={post.id} className={card.post}>
-              {post.image_url && (
-                <PostImage
-                  src={post.image_url}
-                  alt={`Photo by ${profileRecord.display_name ?? 'user'}`}
-                  bleedTop
-                />
-              )}
-              {post.content && (
-                <p className={post.image_url ? `${typography.postBody} mt-3` : typography.postBody}>
-                  {post.content}
-                </p>
-              )}
-              <p className={`${typography.meta} mt-3`}>
-                {new Date(post.created_at).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
-              </p>
-            </article>
+            <PostCard
+              key={post.id}
+              post={post}
+              profile={profileRecord}
+              currentUserProfile={currentUserProfile}
+              likes={likesData}
+              comments={enrichedComments}
+              currentUserId={user.id}
+            />
           ))}
         </div>
       )}
