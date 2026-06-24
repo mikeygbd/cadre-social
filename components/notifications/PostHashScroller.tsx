@@ -4,6 +4,11 @@ import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { notifications as notifStyles } from '@/lib/styles'
 
+function setPostHighlight(element: Element, enabled: boolean): void {
+  const classes = notifStyles.postHighlight.split(/\s+/).filter(Boolean)
+  element.classList[enabled ? 'add' : 'remove'](...classes)
+}
+
 function scrollToPostHash(): void {
   const hash = window.location.hash
   if (!hash.startsWith('#post-')) return
@@ -12,10 +17,10 @@ function scrollToPostHash(): void {
   if (!element) return
 
   element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  element.classList.add(notifStyles.postHighlight)
+  setPostHighlight(element, true)
 
   window.setTimeout(() => {
-    element.classList.remove(notifStyles.postHighlight)
+    setPostHighlight(element, false)
   }, 2000)
 }
 
