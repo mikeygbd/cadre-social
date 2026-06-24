@@ -13,7 +13,6 @@ type Props = {
   likes: PostLike[]
   comments: CommentWithProfile[]
   currentUserId: string
-  currentUserProfile: Profile
 }
 
 export default function FeedPosts({
@@ -22,7 +21,6 @@ export default function FeedPosts({
   likes,
   comments,
   currentUserId,
-  currentUserProfile,
 }: Props): JSX.Element {
   const router = useRouter()
   const [pendingPosts, setPendingPosts] = useState<PendingPost[]>([])

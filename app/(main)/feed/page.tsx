@@ -89,7 +89,6 @@ export default async function FeedPage(): Promise<JSX.Element> {
     profileMap.set(user.id, selfProfile)
   }
 
-  const resolvedCurrentUserProfile = profileMap.get(user.id)!
   const allProfiles = [...profileMap.values()]
 
   return (
@@ -99,7 +98,6 @@ export default async function FeedPage(): Promise<JSX.Element> {
       likes={likesData}
       comments={enrichedComments}
       currentUserId={user.id}
-      currentUserProfile={resolvedCurrentUserProfile}
     />
   )
 }
